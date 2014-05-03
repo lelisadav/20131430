@@ -1,29 +1,72 @@
 
 ;; Parsed expression datatypes
 
-(define-datatype expression expression?
-  [var-exp        ; variable references
-   (id symbol?)]
-  [lit-exp        ; "Normal" data.  Did I leave out any types?
-   (datum
-    (lambda (x)
-      (ormap 
-       (lambda (pred) (pred x))
-       (list number? vector? boolean? symbol? string? pair? null?))))]
-  [app-exp        ; applications
-   (rator expression?)
-   (rands (list-of expression?))]  
-  )
+;Expression types.
+;Based on the simple expression grammar, EoPL-2 p6
+(define-datatype expression expression?  
+	[var-exp
+		(id symbol?)]
+	[lambda-exp
+		(id pair?)
+		(body (list-of? expression?))]
+	(thunk-exp
+		(id null?)
+		(body (list-of? expression?)))
+	(multi-lambda-exp
+		(id symbol?)
+		(body (list-of? expression?)))
+	(app-exp
+		(rator expression-o?)
+		(rand (list-of? expression?)))
+	(if-exp-null
+		(condition expression?)
+		(truebody expression?))
+	(if-else-exp
+		(condition expression?)
+		(truebody expression?)
+		(falsebody expression?))
+	(namedlet-exp
+		(name symbol?)
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?)))
+	(let-exp
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?)))
+	[let*-exp 
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?))]
+	[letrec-exp 
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?))]
+	[set!-exp
+		(var symbol?)
+		(expr expression?)]
+	[lit-exp
+		(id literal?)])
 
 	
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
 
+(define expression-o?
+	(lambda (v)
+		(or (expression? v) (proc-val? v))))
+
 (define-datatype proc-val proc-val?
-  [prim-proc
-   (name symbol?)])
+	[prim-proc
+		(name symbol?)])
 	 
-	 
+(define prim-proc?
+	(lambda (sym)
+		(let loop ([sym sym]
+				[prim-procs *prim-proc-names*])
+			(cond [(null? prim-procs) #f]
+				[(eqv? (car prim-procs) (car sym)) #t]
+				[else (loop sym (cdr prim-procs))]))))
 	 
 	
 ;; environment type definitions
@@ -32,8 +75,8 @@
   (lambda (x) #t))
 
 (define-datatype environment environment?
-  (empty-env-record)
-  (extended-env-record
-   (syms (list-of symbol?))
-   (vals (list-of scheme-value?))
-   (env environment?)))
+	(empty-env-record)
+	(extended-env-record
+		(syms (list-of symbol?))
+		(vals (list-of scheme-value?))
+		(env environment?)))

@@ -16,11 +16,11 @@
 				datum)]
 		[var-exp (id)
 			(apply-env env id
-			(lambda (x) x)
-			(lambda () apply-env global-env id
-      	    (lambda (x) (x) ;procedure to call if id is in the environment 
-            (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-		        "variable not found in environment: ~s")))))]
+				(lambda (x) x)
+				(lambda () (apply-env global-env id
+					(lambda (x) x) ;procedure to call if id is in the environment 
+						(lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s")))))]
 		[let-exp (vars exp bodies)
 			(let ([new-env 
 					(extend-env vars 
@@ -46,14 +46,13 @@
 						(eval-exp (car bodies) new-env)
 						(begin (eval-exp (car bodies) new-env)
 							(loop (cdr bodies))))))]
-		[app-exp (rator rands)
+		[app-exp (rator rands) 
 			(let ([proc-value (eval-exp rator)]
 					[args (eval-rands rands)])
 				(apply-proc proc-value args))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
-
 (define eval-rands
   (lambda (rands)
     (map eval-exp rands)))
@@ -63,13 +62,13 @@
 ;  User-defined procedures will be added later.
 
 (define apply-proc
-  (lambda (proc-value args)
-    (cases proc-val proc-value
-      [prim-proc (op) (apply-prim-proc op args)]
+	(lambda (proc-value args)
+		(cases proc-val proc-value
+			[prim-proc (op) (apply-prim-proc op args)]
 			; You will add other cases
-      [else (error 'apply-proc
-                   "Attempt to apply bad procedure: ~s" 
-                    proc-value)])))
+			[else (error 'apply-proc
+                "Attempt to apply bad procedure: ~s" 
+                proc-value)])))
 
 (define *prim-proc-names* '(+ - * add1 sub1 cons =))
 

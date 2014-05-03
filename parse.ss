@@ -1,52 +1,5 @@
 ;Interpretor Project by Rose Reatherford and Laura Davey
  
-;Expression types.
-;Based on the simple expression grammar, EoPL-2 p6
-(define-datatype expression expression?  
-	[var-exp
-		(id symbol?)]
-	[lambda-exp
-		(id pair?)
-		(body (list-of? expression?))]
-	(thunk-exp
-		(id null?)
-		(body (list-of? expression?)))
-	(multi-lambda-exp
-		(id symbol?)
-		(body (list-of? expression?)))
-	(app-exp
-		(rator expression?)
-		(rand (list-of? expression?)))
-	(if-exp-null
-		(condition expression?)
-		(truebody expression?))
-	(if-else-exp
-		(condition expression?)
-		(truebody expression?)
-		(falsebody expression?))
-	(namedlet-exp
-		(name symbol?)
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?)))
-	(let-exp
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?)))
-	[let*-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
-	[letrec-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
-	[set!-exp
-		(var symbol?)
-		(expr expression?)]
-	[lit-exp
-		(id literal?)])
-	 
 ;Checks to be sure this item is a literal.
 (define literal?
 	(lambda (x)
@@ -78,6 +31,7 @@
   (lambda (datum)
 		(cond
 			[(null? datum) (lit-exp '())]
+			[(prim-proc? (list datum)) (prim-proc datum)]
 			[(symbol? datum) (var-exp datum)]
 			[(literal? datum) (lit-exp datum)]
 			[(list? datum)
@@ -207,7 +161,7 @@
 										[expr (cddr datum)])
 									(set!-exp var (parse-exp expr)))])]
 					[else 
-						(app-exp(parse-exp (car datum))(map parse-exp (cdr datum)))])]
+						(app-exp (parse-exp (car datum)) (map parse-exp (cdr datum)))])]
 			[(pair? datum) 
 				(eopl:error 'parse-exp
 				"expression ~s is not a proper list" datum)]
