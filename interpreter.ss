@@ -36,6 +36,13 @@
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
 			(lambda params body)]
+		[multi-lambda-exp (param bodies)
+			(lambda params
+				(let loop ([bodies bodies])
+					(if (null? (cdr bodies))
+						(eval-exp (car bodies) new-env)
+						(begin (eval-exp (car bodies) new-env)
+							(loop (cdr bodies))))))]
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator)]
               [args (eval-rands rands)])
