@@ -1,7 +1,8 @@
 ;Interpretor Project by Rose Reatherford and Laura Davey
  
 ;Expression types.
-(define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
+;Based on the simple expression grammar, EoPL-2 p6
+(define-datatype expression expression?  
 	[var-exp
 		(id symbol?)]
 	[lambda-exp
@@ -72,6 +73,7 @@
 				[(not (list? ls)) (printf "not a list\n") (pred? ls)]
 				[else (or (andmap pred ls) (pred ls))]))))
 
+;Parses a scheme expression into something else, for application into an interpretor.
 (define parse-exp
   (lambda (datum)
 		(cond
