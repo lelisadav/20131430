@@ -3,30 +3,33 @@
 (define top-level-eval
   (lambda (form)
     ; later we may add things that are not expressions.
-    (eval-exp form)))
+    (eval-exp form init-env)))
 
 ; eval-exp is the main component of the interpreter
 
 (define eval-exp
   (lambda (exp env)
     (cases expression exp
-      [lit-exp (datum) datum]
+		[lit-exp (datum) 
+			(if (and (pair? datum) (eqv? (car datum) 'quote))
+				(cadr datum)
+				datum)]
 		[var-exp (id)
 			(apply-env env id
 			(lambda (x) x)
 			(lambda () apply-env global-env id
       	    (lambda (x) (x) ;procedure to call if id is in the environment 
             (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-		        "variable not found in environment: ~s")]
+		        "variable not found in environment: ~s")))))]
 		[let-exp (vars exp bodies)
 			(let ([new-env 
 					(extend-env vars 
-						(map (lambda (x) (eval-exp x env) exps) env)])
+						(map (lambda (x) (eval-exp x env) exps) env))])
 					(let loop ([bodies bodies])
 						(if (null? (cdr bodies))
 							(eval-exp (car bodies) new-env)
 							(begin (eval-exp (car bodies) new-env)
-								(loop (cdr bodies)))))))]
+								(loop (cdr bodies))))))]
 		[if-else-exp (test-exp then-exp else-exp)
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env)
@@ -43,11 +46,11 @@
 						(eval-exp (car bodies) new-env)
 						(begin (eval-exp (car bodies) new-env)
 							(loop (cdr bodies))))))]
-      [app-exp (rator rands)
-        (let ([proc-value (eval-exp rator)]
-              [args (eval-rands rands)])
-          (apply-proc proc-value args))]
-      [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
+		[app-exp (rator rands)
+			(let ([proc-value (eval-exp rator)]
+					[args (eval-rands rands)])
+				(apply-proc proc-value args))]
+		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
 
@@ -71,28 +74,28 @@
 (define *prim-proc-names* '(+ - * add1 sub1 cons =))
 
 (define init-env         ; for now, our initial global environment only contains 
-  (extend-env            ; procedure names.  Recall that an environment associates
-     *prim-proc-names*   ;  a value (not an expression) with an identifier.
-     (map prim-proc      
-          *prim-proc-names*)
-     (empty-env)))
+	(extend-env            ; procedure names.  Recall that an environment associates
+		*prim-proc-names*   ;  a value (not an expression) with an identifier.
+		(map prim-proc      
+			*prim-proc-names*)
+		(empty-env)))
 
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
 
 (define apply-prim-proc
-  (lambda (prim-proc args)
-    (case prim-proc
-      [(+) (+ (1st args) (2nd args))]
-      [(-) (- (1st args) (2nd args))]
-      [(*) (* (1st args) (2nd args))]
-      [(add1) (+ (1st args) 1)]
-      [(sub1) (- (1st args) 1)]
-      [(cons) (cons (1st args) (2nd args))]
-      [(=) (= (1st args) (2nd args))]
-      [else (error 'apply-prim-proc 
-            "Bad primitive procedure name: ~s" 
-            prim-op)])))
+	(lambda (prim-proc args)
+		(case prim-proc
+		    [(+) (+ (1st args) (2nd args))]
+		    [(-) (- (1st args) (2nd args))]
+		    [(*) (* (1st args) (2nd args))]
+		    [(add1) (+ (1st args) 1)]
+		    [(sub1) (- (1st args) 1)]
+		    [(cons) (cons (1st args) (2nd args))]
+		    [(=) (= (1st args) (2nd args))]
+		    [else (error 'apply-prim-proc 
+				"Bad primitive procedure name: ~s" 
+				prim-op)])))
 
 (define rep      ; "read-eval-print" loop.
   (lambda ()
@@ -104,7 +107,7 @@
       (rep))))  ; tail-recursive, so stack doesn't grow.
 
 (define eval-one-exp
-  (lambda (x) (top-level-eval (parse-exp x))))
+	(lambda (x) (top-level-eval (parse-exp x))))
 
 
 
