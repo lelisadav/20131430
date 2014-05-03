@@ -8,15 +8,34 @@
 ; eval-exp is the main component of the interpreter
 
 (define eval-exp
-  (lambda (exp)
+  (lambda (exp env)
     (cases expression exp
       [lit-exp (datum) datum]
-      [var-exp (id)
-				(apply-env init-env id; look up its value.
-      	   (lambda (x) x) ; procedure to call if id is in the environment 
-           (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-		          "variable not found in environment: ~s"
-			   id)))] 
+		[var-exp (id)
+			(apply-env env id
+			(lambda (x) x)
+			(lambda () apply-env global-env id
+      	    (lambda (x) (x) ;procedure to call if id is in the environment 
+            (lambda () (eopl:error 'apply-env ; procedure to call if id not in env
+		        "variable not found in environment: ~s")]
+		[let-exp (vars exp bodies)
+			(let ([new-env 
+					(extend-env vars 
+						(map (lambda (x) (eval-exp x env) exps) env)])
+					(let loop ([bodies bodies])
+						(if (null? (cdr bodies))
+							(eval-exp (car bodies) new-env)
+							(begin (eval-exp (car bodies) new-env)
+								(loop (cdr bodies)))))))]
+		[if-else-exp (test-exp then-exp else-exp)
+			(if (eval-exp test-exp env)
+				(eval-exp then-exp env)
+				(eval-exp else-exp env))]
+		[if-exp-null (test-exp then-exp)
+			(if (eval-exp test-exp env)
+				(eval-exp then-exp env))]
+		[lambda-exp (params body)
+			
       [app-exp (rator rands)
         (let ([proc-value (eval-exp rator)]
               [args (eval-rands rands)])
