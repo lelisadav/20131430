@@ -22,7 +22,7 @@
   (app-exp
     (rator expression?)
     (rand (list-of? expression?)))
-  (if-exp
+  (if-exp-null
 	(condition expression?)
 	(truebody expression?))
   (if-else-exp
@@ -117,7 +117,7 @@
 				[body (cddr datum)])
 			(cond
 			[(= 2 (length (cdr datum)))
-				(if-exp (parse-exp condition) (parse-exp (car body)))]
+				(if-exp-null (parse-exp condition) (parse-exp (car body)))]
 			[(= 3 (length (cdr datum)))
 				(if-else-exp (parse-exp condition) (parse-exp (car body)) (parse-exp (cadr body)))]
 			[else (eopl:error 'parse-exp
@@ -254,7 +254,7 @@
 			(lambda-exp (id body) 
 				(append (list 'lambda id)
 				(map unparse-exp body)))
-			(if-exp (condition truebody)
+			(if-exp-null (condition truebody)
 				(list 'if (unparse-exp condition) (unparse-exp truebody))
 			)
 			(if-else-exp (condition truebody falsebody)
