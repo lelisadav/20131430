@@ -38,7 +38,9 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			(lambda params body)]
+			(eval-exp body 
+				(extend-env params
+					(eval-exp params env) env))]
 		[multi-lambda-exp (param bodies)
 			(lambda params
 				(let loop ([bodies bodies])
@@ -49,7 +51,7 @@
 		[app-exp (rator rands) 
 			(let ([proc-value rator]
 					[args (eval-rands rands env)])
-				(apply-proc proc-value args))]
+				(apply-proc proc-value args env))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
@@ -62,13 +64,21 @@
 ;  User-defined procedures will be added later.
 
 (define apply-proc
-	(lambda (proc-value args)
+	(lambda (proc-value args env)
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
+			[lambda-proc (la) (apply-lambda la args env)]
 			; You will add other cases
 			[else (error 'apply-proc
                 "Attempt to apply bad procedure: ~s" 
                 proc-value)])))
+				
+(define apply-lambda
+	(lambda (exp args env)
+		(eval-exp exp
+			(extend-env 
+				(cadr exp)
+				(map (lambda (x) (eval-exp x env)) (caddr exp)) env))))
 
 (define *prim-proc-names* '(+ - * add1 sub1 cons =))
 

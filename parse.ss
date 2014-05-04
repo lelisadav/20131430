@@ -161,7 +161,11 @@
 										[expr (cddr datum)])
 									(set!-exp var (parse-exp expr)))])]
 					[else 
-						(app-exp (parse-exp (car datum)) (map parse-exp (cdr datum)))])]
+						(app-exp  
+							(if (and (list? (car datum)) (eqv? (caar datum) 'lambda))
+								(lambda-proc (parse-exp (car datum)))
+								(parse-exp (car datum)))
+							(map parse-exp (cdr datum)))])]
 			[(pair? datum) 
 				(eopl:error 'parse-exp
 				"expression ~s is not a proper list" datum)]

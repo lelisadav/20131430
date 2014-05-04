@@ -8,8 +8,8 @@
 	init-env)
 
 (define extend-env
-  (lambda (syms vals env)
-    (extended-env-record syms vals env)))
+	(lambda (syms vals env)
+		(extended-env-record syms vals env)))
 
 (define list-find-position
   (lambda (sym los)
