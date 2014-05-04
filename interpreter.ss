@@ -70,10 +70,7 @@
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
   (lambda (rands env)
-    (map (lambda (x) 
-			(if (expression? x)
-				(eval-exp x env)
-				x))
+    (map (lambda (x) (eval-exp x env))
 		rands)))
 
 ;  Apply a procedure to its arguments.
@@ -131,7 +128,7 @@
 		    [(=) (apply-all = = args #t)]
 			[(*) (apply-all * * args 1)]
 			[(/) (apply-all / / args 1)]
-			[(zero?) (eq? (car args) 0)]
+			[(zero?) (equal? (car args) 0)]
 			[(not) (apply-all not not args #f)]
 			[(and) (apply-all and and args #t)]
 			[(or) (apply-all or or args #f)]
