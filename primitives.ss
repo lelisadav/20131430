@@ -114,3 +114,4 @@
 (define zero-check?
 	(lambda (v)
 		(equal? v 0)))
+		
