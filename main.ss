@@ -3,7 +3,7 @@
 ;                  
 ; Claude Anderson.  Last modified April, 2014
 
-;(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/chez-init.ss") 
+(load "chez-init.ss") 
 
 (define load-all ; make it easy to reload the files
   (lambda ()
