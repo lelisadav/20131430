@@ -9,9 +9,15 @@
   (lambda ()
     (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/datatypes.ss")
     (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/parse.ss")
+<<<<<<< HEAD
     (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/env.ss")
 	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/primitives.ss")
     (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/interpreter.ss")))
+=======
+	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/primitives.ss")
+    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/interpreter.ss")
+	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/env.ss")))
+>>>>>>> b6c4092cf274407a5c1ba43fce46bd7fa13d12ee
 
 (load-all)
 
