@@ -91,7 +91,6 @@
 			[(cdddr) (cdr (cdr (cdr (car args))))]
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
-			[(quote) (quote (car args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
