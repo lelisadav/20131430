@@ -90,6 +90,13 @@
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
 
+; +, -, *, /, add1, sub1, zero?, not, = and or < <= >= >
+; cons, car, cdr, list, null?,
+; assq, eq?, equal?, atom?, length, list->vector, list?, pair?, procedure?, 
+; vector->list, vector, make-vector, vector-ref, vector?, number?, symbol?, set-car! , 
+; set-cdr!, vector-set! , display , newline
+; Add the c**r and c***r 
+; procedures (where each "*" stands for an "a" or "d"). 
 (define apply-prim-proc
 	(lambda (prim-proc args)
 		(case prim-proc
@@ -101,6 +108,19 @@
 		    [(=) (apply-all = = args #t)]
 			[(*) (apply-all * * args 1)]
 			[(/) (apply-all / / args 1)]
+			[(zero?) (eq? (car args) 0)]
+			[(not) (apply-all not not args #f)]
+			[(and) (apply-all and and args '())]
+			[(or) (apply-all or or args '())]
+			[(<) (< (car args) (cadr args))]
+			[(>) (> (car args) (cadr args))]
+			[(<=) (<= (car args) (cadr args))]
+			[(>=) (>= (car args) (cadr args))]
+			[(car) (car (car args))]
+			[(caar) (caar (car args))]
+			[(caaar) (caaar (car args))]
+			[(caaaar) (caaaar (car args))]
+			[(
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-op)])))
