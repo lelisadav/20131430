@@ -17,7 +17,7 @@
 	(namedlet-exp
 		(name symbol?)
 		(id (list-of? list?))
-		(body (list-of? expression))
+		(body (list-of? expression)))
 	(let-exp 
 		(id (list-of list?))
 		(body (list-of expression?)))
@@ -169,10 +169,7 @@
 			[(number? (car datum)) #f]
 			[(symbol? (car datum)) (and (equal? (length datum) 2) (expression? (parse-exp (cadr datum))))]
 			[else (and (check-let? (cdr datum)) (check-let? (car datum)))])))
-(define check-named-let?
-	(lambda (datum)
-		(cond [(null? datum)
-			
+
 (define check-lambda?
 	(lambda (datum)
 		(and  (check-valid-arg? (cadr datum))
