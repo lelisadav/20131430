@@ -107,7 +107,7 @@
 (define *prim-proc-names* 
 	'(+ - add1 sub1 cons = * / zero? not and or < > <= >= list null? assq eq? equal? atom? 
 	length list->vector list? pair? procedure? vector->list vector make-vector vector-ref 
-	vector? number? symbol? set-car! set-cdr! vector-set! display mdisplay
+	vector? number? symbol? set-car! set-cdr! vector-set! display
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
 	cddadr cddar cdddar cddddr cdddr cddr cdr quote))
@@ -129,7 +129,10 @@
       (rep))))  ; tail-recursive, so stack doesn't grow.
 
 (define eval-one-exp
-	(lambda (x) (top-level-eval (parse-exp x))))
+	(lambda (x) 
+		;(display x)
+		;(newline)
+	(top-level-eval (parse-exp x))))
 
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 

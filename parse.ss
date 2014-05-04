@@ -3,49 +3,10 @@
 
 ;(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
 
-(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
+;(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
 
 
-(define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
-	(var-exp
-		(id symbol?))
-	(lambda-exp
-		(id (list-of check-lam?))
-		(body (list-of expression?)))
-	(set!-exp
-		(change expression?)
-		(to expression?))
-	(multi-lambda-exp
-		(id check-lam?)
-		(body (list-of expression?)))
-	(namedlet-exp
-		(name symbol?)
-		(id (list-of? list?))
-		(body (list-of? expression)))
-	(let-exp
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?)))
-	[let*-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
-	[letrec-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
-	(if-else-exp 
-		(condition expression?)
-		(if-true expression?)
-		(if-false expression?))
-	(if-exp-null
-		(condition expression?)
-		(if-true expression?))
-	(app-exp
-		(rator expression?)
-		(rand (list-of expression?)))
-	(lit-exp 
-		(item lit?)))
+
 (define lit?
 	(lambda (x)
 		(cond

@@ -60,7 +60,6 @@
 			[(set-cdr!) (set-cdr! (car args) (cadr args))]
 			[(vector-set!) (vector-set! (car args) (cadr args) (caddr args))]
 			[(display) (display (car args))]
-			[(mdisplay) (apply-all display args newline)]
 			[(newline) (newline)]
 			[(caaaar) (car (car (car (car (car args)))))]
 			[(caaadr) (car (car (car (cdr (car args)))))]
@@ -114,7 +113,6 @@
 
 (define apply-all-num
 	(lambda (proc args)
-		(newline)
 		(if (= 2(length args))
 			(proc (car args) (cadr args))
 			(and (proc (car args) (cadr args)) (apply-all-num proc (cdr args))))))
