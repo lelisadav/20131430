@@ -24,7 +24,7 @@
 		[let-exp (vars exp bodies)
 			(let ([new-env 
 					(extend-env vars 
-						(map (lambda (x) (eval-exp x env) exps) env))])
+						(map (lambda (x) (eval-exp x env)) exp) env)])
 					(let loop ([bodies bodies])
 						(if (null? (cdr bodies))
 							(eval-exp (car bodies) new-env)
@@ -85,16 +85,24 @@
 (define apply-prim-proc
 	(lambda (prim-proc args)
 		(case prim-proc
-		    [(+) (+ (1st args) (2nd args))]
-		    [(-) (- (1st args) (2nd args))]
-		    [(*) (* (1st args) (2nd args))]
-		    [(add1) (+ (1st args) 1)]
-		    [(sub1) (- (1st args) 1)]
-		    [(cons) (cons (1st args) (2nd args))]
-		    [(=) (= (1st args) (2nd args))]
+		    [(+) (apply-all + + args 0)]
+		    [(-) (apply-all - + args 0)]
+		    [(*) (* (car args) (cadr args))]
+		    [(add1) (+ (car args) 1)]
+		    [(sub1) (- (car args) 1)]
+		    [(cons) (cons (car args) (cadr args))]
+		    [(=) (apply-all = = args #t)]
+			[(*) (apply-all * * args 1)]
+			[(/) (apply-all / / args 1)]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-op)])))
+				
+(define apply-all
+	(lambda (proc1 proc2 args null-value)
+			(if (null? args) 
+				null-value
+				(proc1 (car args) (apply-all proc2 proc1 (cdr args) null-value)))))
 
 (define rep      ; "read-eval-print" loop.
   (lambda ()

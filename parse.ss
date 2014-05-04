@@ -70,7 +70,7 @@
 					[(eqv? (car datum) 'let)
 						(cond
 							[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'let datum)]
-							[(symbol? (cadr datum)) ;named let
+							[(symbol? (cadr datum)) 
 								(cond
 									[(not (list? (caddr datum)))(eopl:error 'parse-exp
 										"declarations in ~s-expression not a list ~s" 'named-let datum)]
