@@ -38,9 +38,7 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			(eval-exp body 
-				(extend-env params
-					(eval-exp params env) env))]
+			(eval-exp (car body) env)]
 		[multi-lambda-exp (param bodies)
 			(lambda params
 				(let loop ([bodies bodies])
@@ -78,7 +76,7 @@
 		(eval-exp exp
 			(extend-env 
 				(cadr exp)
-				(map (lambda (x) (eval-exp x env)) (caddr exp)) env))))
+				args env))))
 
 (define *prim-proc-names* '(+ - * add1 sub1 cons =))
 
@@ -97,7 +95,6 @@
 		(case prim-proc
 		    [(+) (apply-all + + args 0)]
 		    [(-) (apply-all - + args 0)]
-		    [(*) (* (car args) (cadr args))]
 		    [(add1) (+ (car args) 1)]
 		    [(sub1) (- (car args) 1)]
 		    [(cons) (cons (car args) (cadr args))]
