@@ -97,6 +97,8 @@
 ; set-cdr!, vector-set! , display , newline
 ; Add the c**r and c***r 
 ; procedures (where each "*" stands for an "a" or "d"). 
+;
+
 (define apply-prim-proc
 	(lambda (prim-proc args)
 		(case prim-proc
@@ -116,11 +118,62 @@
 			[(>) (> (car args) (cadr args))]
 			[(<=) (<= (car args) (cadr args))]
 			[(>=) (>= (car args) (cadr args))]
-			[(car) (car (car args))]
-			[(caar) (caar (car args))]
-			[(caaar) (caaar (car args))]
-			[(caaaar) (caaaar (car args))]
-			[(
+			[(list) (apply-all list append args '())]
+			[(null?) (car args)]
+			[(assq) (car args) (cadr args)]
+			[(eq?) (eq? (car args) (cadr args))]
+			[(equal?) (equal? (car args) (cadr args))]
+			[(atom?) (atom? (car args))]
+			[(length) (length (car args))]
+			[(list->vector) (list->vector (car args))]
+			[(list?) (list? (car args))]
+			[(pair?) (pair? (car args))]
+			[(procedure?) (procedure? (car args))]
+			[(vector->list) (vector->list (car args))]
+			[(vector) (apply-all vector append args '())]
+			[(make-vector) (if (length (= 2 (length args))) 
+				(make-vector (car args) (cadr args)) (make-vector (car args)))]
+			[(vector-ref) (vector-ref (car args) (cadr args))]
+			[(vector?) (vector? (car args))]
+			[(number?) (number? (car args))]
+			[(symbol?) (symbol? (car args))]
+			[(set-car!) (set-car! (car args) (cadr args))]
+			[(set-cdr!) (set-cdr! (car args) (cadr args))]
+			[(set-car!) (set-car! (car args) (cadr args))]
+			[(vector-set!) (vector-set! (car args) (cadr args) (caddr args))]
+			[(display) (display (car args))]
+			[(mdisplay) (apply-all display display args newline)]
+			[(newline) (newline)]
+			[(caaaar)	(caaaar (car args))]
+			[(caaadr)	(caaadr (car args))]
+			[(caaar)	(caaar (car args))]
+			[(caadar)	(caadar (car args))]
+			[(caaddr)	(caaddr (car args))]
+			[(caadr)	(caadr (car args))]
+			[(caar)	(caar (car args))]
+			[(cadaar)	(cadaar (car args))]
+			[(cadadr)	(cadadr (car args))]
+			[(cadar)	(cadar (car args))]
+			[(caddar)	(caddar (car args))]
+			[(cadddr)	(cadddr (car args))]
+			[(caddr)	(caddr (car args))]
+			[(cadr)	(cadr (car args))]
+			[(car)	(car (car args))]
+			[(cdaaar)	(cdaaar (car args))]
+			[(cdaadr)	(cdaadr (car args))]
+			[(cdaar)	(cdaar (car args))]
+			[(cdadar)	(cdadar (car args))]
+			[(cdaddr)	(cdaddr (car args))]
+			[(cdadr)	(cdadr (car args))]
+			[(cdar)	(cdar (car args))]
+			[(cddaar)	(cddaar (car args))]
+			[(cddadr)	(cddadr (car args))]
+			[(cddar)	(cddar (car args))]
+			[(cdddar)	(cdddar (car args))]
+			[(cddddr)	(cddddr (car args))]
+			[(cdddr)	(cdddr (car args))]
+			[(cddr)	(cddr (car args))]
+			[(cdr)	(cdr (car args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-op)])))
