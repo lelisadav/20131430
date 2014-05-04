@@ -47,15 +47,15 @@
 						(begin (eval-exp (car bodies) new-env)
 							(loop (cdr bodies))))))]
 		[app-exp (rator rands) 
-			(let ([proc-value (eval-exp rator)]
-					[args (eval-rands rands)])
+			(let ([proc-value rator]
+					[args (eval-rands rands env)])
 				(apply-proc proc-value args))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
-  (lambda (rands)
-    (map eval-exp rands)))
+  (lambda (rands env)
+    (map (lambda (x) (eval-exp x env)) rands)))
 
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  
