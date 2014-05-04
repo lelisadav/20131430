@@ -22,15 +22,18 @@
 		(name symbol?)
 		(id (list-of? list?))
 		(body (list-of? expression)))
-	(let-exp 
-		(id (list-of list?))
-		(body (list-of expression?)))
-	(let*-exp 
-		(id (list-of list?))
-		(body (list-of expression?)))
-	(letrec-exp 
-		(id (list-of list?))
-		(body (list-of expression?)))
+	(let-exp
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?)))
+	[let*-exp 
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?))]
+	[letrec-exp 
+		(vars (list-of? symbol?))
+		(vals (list-of? expression?))
+		(body (list-of? expression?))]
 	(if-else-exp 
 		(condition expression?)
 		(if-true expression?)
@@ -46,6 +49,7 @@
 (define lit?
 	(lambda (x)
 		(cond
+		[(quoted? x)  #t]
 		[(list? x) #f]
 		[(pair? x) (quoted? x)] 
 		;[(symbol? x) #f]
@@ -53,7 +57,7 @@
 		[(string? x) #t]
 		[(boolean? x)  #t]
 		[(char? x)  #t]
-		[(quoted? x)  #t]
+		
 		[(vector? x)  #t]
 		[else #f]
 		)))
@@ -87,29 +91,98 @@
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: lambda expression: ~s" datum))]
 					[(eqv? (car datum) 'let)
-						(if (check-let? (cadr datum))
-							(if (null? (cddr datum))
-								(eopl:error 'parse-exp 
-									"Error in parse-exp: let expression: incorrect arguments: ~s" datum)
-								(let-exp (cadr datum) (map parse-exp (cddr datum))))
-							(eopl:error 'parse-exp 
-								"Error in parse-exp: let expression: ~s" datum))]
+							(cond
+								[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'let datum)]
+								[(list? (cadr datum))
+									(cond
+									[(not (andmap list? (cadr datum))) (eopl:error 'parse-exp
+										"declarations in ~s-expression not a proper list ~s" 'let datum)]
+									[(not (andmap (lambda (x) (eq? 2 (length x))) (cadr datum)))
+										(eopl:error 'parse-exp
+											"declaration in ~s-exp must be a list of length 2 ~s" 'let datum)]
+									[(not (andmap (lambda (x) (symbol? (car x))) (cadr datum)))
+										(eopl:error 'parse-exp
+											"vars in ~s-exp must be symbols ~s" 'let datum)]
+									[else
+										(let* (
+										[varvals (cadr datum)]
+										[body (cddr datum)]
+										[splitls (split varvals)]
+										[vars (car splitls)]
+										[vals (cadr splitls)]
+										)
+									(let-exp vars (map parse-exp vals) (map parse-exp body)))])]
+								[else 
+									(eopl:error 'parse-exp
+									"declarations in ~s-expression not a list ~s" 'let datum)])]
 					[(eqv? (car datum) 'let*)
-						(if (check-let? (cadr datum))
-							(if (null? (cddr datum))
-								(eopl:error 'parse-exp 
-									"Error in parse-exp: let expression: incorrect arguments: ~s" datum)
-								(let*-exp (cadr datum) (map parse-exp (cddr datum))))
-							(eopl:error 'parse-exp 
-								"Error in parse-exp: let* expression: ~s" datum))]
+						(cond
+							[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'let* datum)]
+							[(not(list? (cadr datum)))
+								(eopl:error 'parse-exp
+								"declarations in ~s-expression not a list ~s" 'let* datum)]
+							[(not (andmap list? (cadr datum))) (eopl:error 'parse-exp
+								"declarations in ~s-expression not a proper list ~s" 'let* datum)]
+							[(not (andmap (lambda (x) (eq? 2 (length x))) (cadr datum)))
+								(eopl:error 'parse-exp
+								"declaration in ~s-exp must be a list of length 2 ~s" 'let* datum)]
+							[(not (andmap (lambda (x) (symbol? (car x))) (cadr datum)))
+								(eopl:error 'parse-exp
+								"vars in ~s-exp must be symbols ~s" 'let* datum)]
+							[else
+								(let* (
+									[varvals (cadr datum)]
+									[body (cddr datum)]
+									[splitls (split varvals)]
+									[vars (car splitls)]
+									[vals (cadr splitls)])
+									(let*-exp vars (map parse-exp vals) (map parse-exp body)))])]
 					[(eqv? (car datum) 'letrec)
-						(if (check-let? (cadr datum))
-							(if (null? (cddr datum))
-								(eopl:error 'parse-exp 
-									"Error in parse-exp: letrec expression: incorrect arguments: ~s" datum)
-								(letrec-exp (cadr datum) (map parse-exp (cddr datum))))
-							(eopl:error 'parse-exp 
-								"Error in parse-exp: let expression: ~s" datum))]
+						(cond
+							[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'letrec datum)]
+							[(not (list? (cadr datum)))
+								(eopl:error 'parse-exp
+									"declarations in ~s-expression not a list ~s" 'letrec datum)]
+							[(not (andmap list? (cadr datum))) (eopl:error 'parse-exp
+								"declarations in ~s-expression not a proper list ~s" 'letrec datum)]
+							[(not (andmap (lambda (x) (eq? 2 (length x))) (cadr datum)))
+								(eopl:error 'parse-exp
+								"declaration in ~s-exp must be a list of length 2 ~s" 'letrec datum)]
+							[(not (andmap (lambda (x) (symbol? (car x))) (cadr datum)))
+								(eopl:error 'parse-exp
+								"vars in ~s-exp must be symbols ~s" 'letrec datum)]
+							[else
+								(let* (
+									[varvals (cadr datum)]
+									[body (cddr datum)]
+									[splitls (split varvals)]
+									[vars (car splitls)]
+									[vals (cadr splitls)])
+									(letrec-exp vars (map parse-exp vals) (map parse-exp body)))])]
+					; [(eqv? (car datum) 'let)
+						; (if (check-let? (cadr datum))
+							; (if (null? (cddr datum))
+								; (eopl:error 'parse-exp 
+									; "Error in parse-exp: let expression: incorrect arguments: ~s" datum)
+								; (let-exp (cadr datum) (map parse-exp (cddr datum))))
+							; (eopl:error 'parse-exp 
+								; "Error in parse-exp: let expression: ~s" datum))]
+					; [(eqv? (car datum) 'let*)
+						; (if (check-let? (cadr datum))
+							; (if (null? (cddr datum))
+								; (eopl:error 'parse-exp 
+									; "Error in parse-exp: let expression: incorrect arguments: ~s" datum)
+								; (let*-exp (cadr datum) (map parse-exp (cddr datum))))
+							; (eopl:error 'parse-exp 
+								; "Error in parse-exp: let* expression: ~s" datum))]
+					; [(eqv? (car datum) 'letrec)
+						; (if (check-let? (cadr datum))
+							; (if (null? (cddr datum))
+								; (eopl:error 'parse-exp 
+									; "Error in parse-exp: letrec expression: incorrect arguments: ~s" datum)
+								; (letrec-exp (cadr datum) (map parse-exp (cddr datum))))
+							; (eopl:error 'parse-exp 
+								; "Error in parse-exp: let expression: ~s" datum))]
 					[(eqv? (car datum) 'if)
 						(if (check-if? datum)
 							(if (null? (cdddr datum)) 
@@ -133,15 +206,21 @@
 		(multi-lambda-exp (id body)
 			(append (list 'lambda id)
 			(map unparse-exp body)))
-		(let-exp (id body)
-			(append (list 'let id)
-			(map unparse-exp body)))
-		(let*-exp (id body)
-			(append (list 'let* id)
-			(map unparse-exp body)))
-		(letrec-exp (id body)
-			(append (list 'letrec id)
-			(map unparse-exp body)))
+		(let-exp (vars vals body)
+				(let ([merged (merge vars (map unparse-exp vals))])
+				(append (list 'let merged) 
+							(map unparse-exp body)))
+			)
+		(let*-exp (vars vals body)
+			(let ([merged (merge vars (map unparse-exp vals))])
+				(append (list 'let* merged) 
+					(map unparse-exp body)))
+		)
+		(letrec-exp (vars vals body)
+			(let ([merged (merge vars (map unparse-exp vals))])
+				(append (list 'letrec merged) 
+					(map unparse-exp body)))
+			)
 		(app-exp (rator rand)
 			(append (list (unparse-exp rator))
 			(map unparse-exp rand)))
@@ -195,3 +274,9 @@
 (define check-set?
 	(lambda (datum)
 		(equal? (length datum) 2)))
+(define split 
+    (lambda (ls)
+      (list (map (lambda (x) (car x)) ls) (map (lambda (y) (cadr y)) ls))))
+(define merge 
+	(lambda (ls1 ls2)
+	 (map (lambda (x y) (list x y)) ls1 ls2)))

@@ -84,7 +84,7 @@
 		     a
 		     c
 		     b
-		     (#t #t #f)
+		     ; (#t #t #f)
 		     )]
           [answers 
             (list 
@@ -113,10 +113,10 @@
 	     (eval-one-exp '(caar '((a b) c)))
 	     (eval-one-exp '(cadr '((a b) c)))
 	     (eval-one-exp '(cadar '((a b) c)))
-	     (eval-one-exp '
-	      (list (procedure? list)
-		    (procedure? (lambda (x y) (list (+ x y))))
-		    (procedure? 'list)))
+	     ; (eval-one-exp '
+	      ; (list (procedure? list)
+		    ; (procedure? (lambda (x y) (list (+ x y))))
+		    ; (procedure? 'list)))
 	     )])
       (display-results correct answers equal?)))
 

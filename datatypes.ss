@@ -5,33 +5,22 @@
 
 ;Expression types.
 ;Based on the simple expression grammar, EoPL-2 p6
-(define-datatype expression expression?  
-	[var-exp
-		(id symbol?)]
-	[lambda-exp
-		(id pair?)
-		(body (list-of? expression-o?))]
-	(thunk-exp
-		(id null?)
-		(body (list-of? expression?)))
+(define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
+	(var-exp
+		(id symbol?))
+	(lambda-exp
+		(id (list-of check-lam?))
+		(body (list-of expression?)))
+	(set!-exp
+		(change expression?)
+		(to expression?))
 	(multi-lambda-exp
-		(id symbol?)
-		(body (list-of? expression?)))
-	(app-exp
-		(rator expression-o?)
-		(rand (list-of? expression-o?)))
-	(if-exp-null
-		(condition expression?)
-		(truebody expression?))
-	(if-else-exp
-		(condition expression?)
-		(truebody expression?)
-		(falsebody expression?))
+		(id check-lam?)
+		(body (list-of expression?)))
 	(namedlet-exp
 		(name symbol?)
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?)))
+		(id (list-of? list?))
+		(body (list-of? expression)))
 	(let-exp
 		(vars (list-of? symbol?))
 		(vals (list-of? expression?))
@@ -44,11 +33,18 @@
 		(vars (list-of? symbol?))
 		(vals (list-of? expression?))
 		(body (list-of? expression?))]
-	[set!-exp
-		(var symbol?)
-		(expr expression?)]
-	[lit-exp
-		(id literal?)])
+	(if-else-exp 
+		(condition expression?)
+		(if-true expression?)
+		(if-false expression?))
+	(if-exp-null
+		(condition expression?)
+		(if-true expression?))
+	(app-exp
+		(rator expression?)
+		(rand (list-of expression?)))
+	(lit-exp 
+		(item lit?)))
 
 	
 ; datatype for procedures.  At first there is only one

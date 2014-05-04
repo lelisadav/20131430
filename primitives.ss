@@ -20,7 +20,7 @@
 		    [(add1) (+ (car args) 1)]
 		    [(sub1) (- (car args) 1)]
 		    [(cons) (cons (car args) (cadr args))]
-		    [(=) (apply-all = args #t)]
+		    [(=) (apply-all-num = args)]
 			[(*) (apply-all * args 1)]
 			[(/) (apply-all / args 1)]
 			
@@ -29,15 +29,15 @@
 			;; It wil learn as a zero for this assignment.
 			;; All need to be re-done.
 			[(zero?) (zero?-def (car args))]
-			[(not) (not-def args)]
+			[(not) (not-def (car args))]
 			[(and) (and-def args)]
 			[(or) (or-def args)]
-			[(<) (apply-all < args #f)]
-			[(>) (apply-all > args #f)]
-			[(<=) (apply-all <= args #f)]
-			[(>=) (apply-all >= args #f)]
+			[(<) (apply-all-num < args)]
+			[(>) (apply-all-num > args)]
+			[(<=) (apply-all-num <= args)]
+			[(>=) (apply-all-num >= args)]
 			[(list) (list-def args)]
-			[(null?) (null-def (car args))]
+			[(null?) (null?-def (car args))]
 			[(assq) (assq-def (car args) (cadr args))]
 			[(eq?) (eq? (car args) (cadr args))]
 			[(equal?) (equal? (car args) (cadr args))]
@@ -92,6 +92,7 @@
 			[(cdddr) (cdr (cdr (cdr (car args))))]
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
+			[(quote) (quote (car args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -110,13 +111,21 @@
 			null-value
 			(proc (car args) 
 				(apply-all proc (cdr args) null-value)))))
-				
+
+(define apply-all-num
+	(lambda (proc args)
+		(newline)
+		(if (= 2(length args))
+			(proc (car args) (cadr args))
+			(and (proc (car args) (cadr args)) (apply-all-num proc (cdr args))))))
 (define zero?-def
 	(lambda (v)
 		(equal? v 0)))
 		
 (define not-def
-	(lambda (x) (if x #f #t)))
+	(lambda (x) 
+	
+	(if x #f #t)))
 
 (define and-def
 	(lambda (x) 
@@ -133,7 +142,7 @@
 	[else
 		(let ([t (car x)])
 			(if t t (or-def (cdr x))))])))
-(define null-def 
+(define null?-def 
 	(lambda (x) (eq? x '())))
 (define assq-def
   (lambda (x ls)
@@ -147,7 +156,7 @@
 	(lambda (ls)
 		(cond
 		[(null? ls) 0]
-		[else (+ 1(length-check (cdr ls)))]))) 
+		[else (+ 1(length-def (cdr ls)))]))) 
 (define list->vector-def
   (lambda (ls)
     (let ([s (make-vector (length ls))])
@@ -193,8 +202,9 @@
 		(letrec (
 			[helper 
 				(lambda (args)
-					(if (= 1 length args)
+					(if (= 1 (length args))
 						(cons (car args) '())
 						(cons (car args) (helper (cdr args)))))])
 		(helper args))))
 
+(trace apply-prim-proc zero?-def not-def)
