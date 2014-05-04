@@ -8,7 +8,7 @@
 		(id symbol?)]
 	[lambda-exp
 		(id pair?)
-		(body (list-of? expression?))]
+		(body (list-of? expression-o?))]
 	(thunk-exp
 		(id null?)
 		(body (list-of? expression?)))
@@ -17,7 +17,7 @@
 		(body (list-of? expression?)))
 	(app-exp
 		(rator expression-o?)
-		(rand (list-of? expression?)))
+		(rand (list-of? expression-o?)))
 	(if-exp-null
 		(condition expression?)
 		(truebody expression?))
@@ -60,7 +60,7 @@
 	[prim-proc
 		(name symbol?)]
 	[lambda-proc
-		(exp expression?)])
+		(exp expression-o?)])
 	 
 (define prim-proc?
 	(lambda (sym)
@@ -70,6 +70,7 @@
 				[(eqv? (car prim-procs) (car sym)) #t]
 				[else (loop sym (cdr prim-procs))]))))
 	 
+
 	
 ;; environment type definitions
 
@@ -79,6 +80,6 @@
 (define-datatype environment environment?
 	(empty-env-record)
 	(extended-env-record
-		(syms (list-of symbol?))
+		(syms list?)
 		(vals (list-of scheme-value?))
 		(env environment?)))

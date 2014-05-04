@@ -50,8 +50,8 @@
 										(eopl:error 'parse-exp
 											"lambda's formal arguments ~s must all be symbols" (cadr datum))]
 									[else
-										(lambda-exp (cadr datum) 
-											(map parse-exp (cddr datum)))])])]
+										(lambda-proc (lambda-exp (cadr datum) 
+											(map parse-exp (cddr datum))))])])]
 					[(eqv? (car datum) 'if)
 						(cond 
 							[(and (not (= 2 (length (cdr datum)))) (not (= 3 (length (cdr datum)))))
@@ -162,9 +162,7 @@
 									(set!-exp var (parse-exp expr)))])]
 					[else 
 						(app-exp  
-							(if (and (list? (car datum)) (eqv? (caar datum) 'lambda))
-								(lambda-proc (parse-exp (car datum)))
-								(parse-exp (car datum)))
+							(parse-exp (car datum))
 							(map parse-exp (cdr datum)))])]
 			[(pair? datum) 
 				(eopl:error 'parse-exp
@@ -172,6 +170,12 @@
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
 
+(define check-for-lambda
+	(lambda (exp)
+		(if (and (list? exp) (eqv? (car exp) 'lambda)) 
+			(lambda-proc (parse-exp exp))
+			(parse-exp exp))))
+				
 ;Turns a parsed expression back into something readable by humans.
 (define unparse-exp 
 	(lambda (exp)

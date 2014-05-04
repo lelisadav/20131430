@@ -20,7 +20,7 @@
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
 						(lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-							"variable not found in environment: ~s")))))]
+							"variable not found in environment: ~s" id)))))]
 		[let-exp (vars exp bodies)
 			(let ([new-env 
 					(extend-env vars 
@@ -38,7 +38,11 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			(eval-exp (car body) env)]
+			(last (map (lambda (x) 
+				(if (expression? x)
+					(eval-exp x env)
+					x))
+				body))]
 		[multi-lambda-exp (param bodies)
 			(lambda params
 				(let loop ([bodies bodies])
@@ -48,14 +52,29 @@
 							(loop (cdr bodies))))))]
 		[app-exp (rator rands) 
 			(let ([proc-value rator]
-					[args (eval-rands rands env)])
-				(apply-proc proc-value args env))]
+					[args 
+						(if (expression? rands)
+							(eval-rands rands env)
+							rands)])
+				(if (proc-val? proc-value)
+					(apply-proc proc-value args env)
+					(apply-proc (eval-exp proc-value env) args env)))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
+;Gets the last element in a list.
+(define last 
+	(lambda (ls)
+		(cond [(null? (cdr ls)) (car ls)]
+			[else (last (cdr ls))])))
+		
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
   (lambda (rands env)
-    (map (lambda (x) (eval-exp x env)) rands)))
+    (map (lambda (x) 
+			(if (expression? x)
+				(eval-exp x env)
+				x))
+		rands)))
 
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  
