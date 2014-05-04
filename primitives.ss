@@ -207,4 +207,4 @@
 						(cons (car args) (helper (cdr args)))))])
 		(helper args))))
 
-(trace apply-prim-proc zero?-def not-def)
+;(trace apply-prim-proc zero?-def not-def)

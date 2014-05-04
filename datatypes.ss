@@ -17,22 +17,22 @@
 	(multi-lambda-exp
 		(id check-lam?)
 		(body (list-of expression?)))
-	(namedlet-exp
-		(name symbol?)
-		(id (list-of? list?))
-		(body (list-of? expression)))
+	; (namedlet-exp
+		; (name symbol?)
+		; (id (list-of? list?))
+		; (body (list-of? expression)))
 	(let-exp
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?)))
+		(vars (list-of symbol?))
+		(vals (list-of expression?))
+		(body (list-of expression?)))
 	[let*-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
+		(vars (list-of symbol?))
+		(vals (list-of expression?))
+		(body (list-of expression?))]
 	[letrec-exp 
-		(vars (list-of? symbol?))
-		(vals (list-of? expression?))
-		(body (list-of? expression?))]
+		(vars (list-of symbol?))
+		(vals (list-of expression?))
+		(body (list-of expression?))]
 	(if-else-exp 
 		(condition expression?)
 		(if-true expression?)
@@ -49,7 +49,15 @@
 	
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
-
+(define list-of? 
+	(lambda (pred) 
+		(lambda (ls)
+	; (printf "list-of?\n\n")
+	; (display ls)
+	(cond
+	[(not(list? ls)) (printf "not a list\n")(pred? ls)]
+	[else
+	(or(andmap pred ls) (pred ls))]))))
 (define expression-o?
 	(lambda (v)
 		(or (expression? v) (proc-val? v))))
