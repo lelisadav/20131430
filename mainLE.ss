@@ -2,22 +2,19 @@
 ; Possible starting point for first interpreter assignment.
 ;                  
 ; Claude Anderson.  Last modified April, 2014
-
-;(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/chez-init.ss") 
+(cd "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/")
+(load "chez-init.ss") 
 
 (define load-all ; make it easy to reload the files
   (lambda ()
-    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/datatypes.ss")
-    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/parse.ss")
-<<<<<<< HEAD
-    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/env.ss")
-	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/primitives.ss")
-    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/interpreter.ss")))
-=======
-	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/primitives.ss")
-    (load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/interpreter.ss")
-	(load "C:/Users/daveyle/Desktop/CSSE304/Interpreter/20131430/env.ss")))
->>>>>>> b6c4092cf274407a5c1ba43fce46bd7fa13d12ee
+    (load "datatypes.ss")
+    (load "parse.ss")
+    (load "env.ss")
+	(load "interpreter.ss")
+	(load "primitives.ss")))
+	(load "primitives.ss")
+    (load "interpreter.ss")))
+
 
 (load-all)
 

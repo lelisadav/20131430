@@ -1,10 +1,10 @@
 ;Rose Reatherford, Assignment 3
 ;Problem #2
-<<<<<<< HEAD
+
 ;(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
-=======
+
 (load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
->>>>>>> b6c4092cf274407a5c1ba43fce46bd7fa13d12ee
+
 
 (define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
 	(var-exp
