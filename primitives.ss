@@ -28,70 +28,70 @@
 			;; You cannot use the actual procedure itself to do these.
 			;; It wil learn as a zero for this assignment.
 			;; All need to be re-done.
-			[(zero?) (zero-check? (car args))]
-			[(not) (apply-all not not args #f)]
-			[(and) (apply-all and and args #t)]
-			[(or) (apply-all or or args #f)]
-			[(<) (< (car args) (cadr args))]
-			[(>) (> (car args) (cadr args))]
-			[(<=) (<= (car args) (cadr args))]
-			[(>=) (>= (car args) (cadr args))]
-			[(list) (apply-all list append args '())]
-			[(null?) (car args)]
-			[(assq) (car args) (cadr args)]
+			[(zero?) (zero?-def (car args))]
+			[(not) (not-def args)]
+			[(and) (and-def args)]
+			[(or) (or-def args)]
+			[(<) (apply-all < args #f)]
+			[(>) (apply-all > args #f)]
+			[(<=) (apply-all <= args #f)]
+			[(>=) (apply-all >= args #f)]
+			[(list) (list-def args)]
+			[(null?) (null-def (car args))]
+			[(assq) (assq-def (car args) (cadr args))]
 			[(eq?) (eq? (car args) (cadr args))]
 			[(equal?) (equal? (car args) (cadr args))]
-			[(atom?) (atom? (car args))]
-			[(length) (length (car args))]
-			[(list->vector) (list->vector (car args))]
-			[(list?) (list? (car args))]
+			[(atom?) (atom?-def (car args))]
+			[(length) (length-def (car args))]
+			[(list->vector) (list->vector-def (car args))]
+			[(list?) (list?-def (car args))]
 			[(pair?) (pair? (car args))]
 			[(procedure?) (procedure? (car args))]
-			[(vector->list) (vector->list (car args))]
-			[(vector) (apply-all vector append args '())]
+			[(vector->list) (vector->list-def (car args))]
+			[(vector) (vector-def args)]
 			[(make-vector) (if (length (= 2 (length args))) 
-				(make-vector (car args) (cadr args)) (make-vector (car args)))]
-			[(vector-ref) (vector-ref (car args) (cadr args))]
+				(make-vector (car args) (cadr args)) 
+				(make-vector (car args)))]
+			[(vector-ref) (vector-ref-def (car args) (cadr args))]
 			[(vector?) (vector? (car args))]
 			[(number?) (number? (car args))]
 			[(symbol?) (symbol? (car args))]
 			[(set-car!) (set-car! (car args) (cadr args))]
 			[(set-cdr!) (set-cdr! (car args) (cadr args))]
-			[(set-car!) (set-car! (car args) (cadr args))]
 			[(vector-set!) (vector-set! (car args) (cadr args) (caddr args))]
 			[(display) (display (car args))]
-			[(mdisplay) (apply-all display display args newline)]
+			[(mdisplay) (apply-all display args newline)]
 			[(newline) (newline)]
-			[(caaaar)	(caaaar (car args))]
-			[(caaadr)	(caaadr (car args))]
-			[(caaar)	(caaar (car args))]
-			[(caadar)	(caadar (car args))]
-			[(caaddr)	(caaddr (car args))]
-			[(caadr)	(caadr (car args))]
-			[(caar)	(caar (car args))]
-			[(cadaar)	(cadaar (car args))]
-			[(cadadr)	(cadadr (car args))]
-			[(cadar)	(cadar (car args))]
-			[(caddar)	(caddar (car args))]
-			[(cadddr)	(cadddr (car args))]
-			[(caddr)	(caddr (car args))]
-			[(cadr)	(cadr (car args))]
-			[(car)	(car (car args))]
-			[(cdaaar)	(cdaaar (car args))]
-			[(cdaadr)	(cdaadr (car args))]
-			[(cdaar)	(cdaar (car args))]
-			[(cdadar)	(cdadar (car args))]
-			[(cdaddr)	(cdaddr (car args))]
-			[(cdadr)	(cdadr (car args))]
-			[(cdar)	(cdar (car args))]
-			[(cddaar)	(cddaar (car args))]
-			[(cddadr)	(cddadr (car args))]
-			[(cddar)	(cddar (car args))]
-			[(cdddar)	(cdddar (car args))]
-			[(cddddr)	(cddddr (car args))]
-			[(cdddr)	(cdddr (car args))]
-			[(cddr)	(cddr (car args))]
-			[(cdr)	(cdr (car args))]
+			[(caaaar) (car (car (car (car (car args)))))]
+			[(caaadr) (car (car (car (cdr (car args)))))]
+			[(caaar) (car (car (car (car args))))]
+			[(caadar) (car (car (cdr (car (car args)))))]
+			[(caaddr) (car (car (cdr (cdr (car args)))))]
+			[(caadr) (car (car (cdr (car args))))]
+			[(caar) (car (car (car args)))]
+			[(cadaar) (car (cdr (car (car (car args)))))]
+			[(cadadr) (car (cdr (car (cdr (car args)))))]
+			[(cadar) (car (cdr (car (car args))))]
+			[(caddar) (car (cdr (cdr (car (car args)))))]
+			[(cadddr) (car (cdr (cdr (cdr (car args)))))]
+			[(caddr) (car (cdr (cdr (car args))))]
+			[(cadr) (car (cdr (car args)))]
+			[(car) (car (car args))]
+			[(cdaaar) (cdr (car (car (car (car args)))))]
+			[(cdaadr) (cdr (car (car (cdr (car args)))))]
+			[(cdaar) (cdr (car (car (car args))))]
+			[(cdadar) (cdr (car (cdr (car (car args)))))]
+			[(cdaddr) (cdr (car (cdr (cdr (car args)))))]
+			[(cdadr) (cdr (car (cdr (car args))))]
+			[(cdar) (cdr (car (car args)))]
+			[(cddaar) (cdr (cdr (car (car (car args)))))]
+			[(cddadr) (cdr (cdr (car (cdr (car args)))))]
+			[(cddar) (cdr (cdr (car (car args))))]
+			[(cdddar) (cdr (cdr (cdr (car (car args)))))]
+			[(cddddr) (cdr (cdr (cdr (cdr (car args)))))]
+			[(cdddr) (cdr (cdr (cdr (car args))))]
+			[(cddr) (cdr (cdr (car args)))]
+			[(cdr) (cdr (car args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -111,7 +111,90 @@
 			(proc (car args) 
 				(apply-all proc (cdr args) null-value)))))
 				
-(define zero-check?
+(define zero?-def
 	(lambda (v)
 		(equal? v 0)))
 		
+(define not-def
+	(lambda (x) (if x #f #t)))
+
+(define and-def
+	(lambda (x) 
+	(cond 
+	[(null? x) #t]
+	[(= 1(length x)) (car x)]
+	[else
+	(if (car args) (and-def (cdr args)) #f)])))
+(define or-def
+	(lambda (x)
+	(cond
+	[(null? x) #f]
+	[(= 1 (length x)) (car x)]
+	[else
+		(let ([t (car x)])
+			(if t t (or-def (cdr x))))])))
+(define null-def 
+	(lambda (x) (eq? x '())))
+(define assq-def
+  (lambda (x ls)
+    (cond
+      [(null? ls) #f]
+      [(eq? (caar ls) x) (car ls)]
+      [else (assq-def x (cdr ls))])))
+(define atom?-def
+	(lambda (x)(not (or (pair? x) (null? x)))))
+(define length-def
+	(lambda (ls)
+		(cond
+		[(null? ls) 0]
+		[else (+ 1(length-check (cdr ls)))]))) 
+(define list->vector-def
+  (lambda (ls)
+    (let ([s (make-vector (length ls))])
+      (do ([ls ls (cdr ls)] [i 0 (+ i 1)])
+          ((null? ls) s)
+        (vector-set! s i (car ls)))))) 
+(define list?-def
+  (lambda (x)
+    (let race ([h x] [t x])
+      (if (pair? h)
+          (let ([h (cdr h)])
+            (if (pair? h)
+                (and (not (eq? h t))
+                     (race (cdr h) (cdr t)))
+                (null? h)))
+          (null? h)))))
+(define vector->list-def
+  (lambda (s)
+    (do ([i (- (vector-length s) 1) (- i 1)]
+         [ls '() (cons (vector-ref s i) ls)])
+        ((< i 0) ls)))) 
+
+(define vector-def
+	(lambda (args)
+		(letrec ([helper 
+			(lambda (n args vec)
+				(if (< n (vector-length vec))
+					(begin
+					(vector-set! vec n (car args))
+					(helper (+ 1 n) (cdr args) vec))
+					vec))])
+			(helper 0 args (make-vector (length args))))))
+(define vector-ref-def
+	(lambda (vec n)
+		(letrec ([helper
+			(lambda (currvec n)
+				(if (= index n)
+					(car currvec)
+					(helper  (cdr currvec) (+ 1 index))))])
+		(helper vec 0))))
+(define list-def
+	(lambda (args)
+		(letrec (
+			[helper 
+				(lambda (args)
+					(if (= 1 length args)
+						(cons (car args) '())
+						(cons (car args) (helper (cdr args)))))])
+		(helper args))))
+
