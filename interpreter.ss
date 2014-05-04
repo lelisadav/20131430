@@ -53,7 +53,7 @@
 		[app-exp (rator rands) 
 			(let ([proc-value rator]
 					[args 
-						(if (expression? rands)
+						(if (andmap expression? rands)
 							(eval-rands rands env)
 							rands)])
 				(if (proc-val? proc-value)
@@ -97,7 +97,9 @@
 				(cadr exp)
 				args env))))
 
-(define *prim-proc-names* '(+ - * add1 sub1 cons =))
+(define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not and or < > >= <= list null? assq eq? equal? atom? length list->vector
+							list? pair? procedure? vector->list vector make-vector vector-ref vector? number? symbol? set-car! set-cdr! 
+							vector-set! display mdisplay car cdr newline))
 
 (define init-env         ; for now, our initial global environment only contains 
 	(extend-env            ; procedure names.  Recall that an environment associates
@@ -131,8 +133,8 @@
 			[(/) (apply-all / / args 1)]
 			[(zero?) (eq? (car args) 0)]
 			[(not) (apply-all not not args #f)]
-			[(and) (apply-all and and args '())]
-			[(or) (apply-all or or args '())]
+			[(and) (apply-all and and args #t)]
+			[(or) (apply-all or or args #f)]
 			[(<) (< (car args) (cadr args))]
 			[(>) (> (car args) (cadr args))]
 			[(<=) (<= (car args) (cadr args))]
@@ -195,7 +197,7 @@
 			[(cdr)	(cdr (car args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
-				prim-op)])))
+				prim-proc)])))
 				
 (define apply-all
 	(lambda (proc1 proc2 args null-value)

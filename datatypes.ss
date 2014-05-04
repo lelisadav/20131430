@@ -58,9 +58,13 @@
 
 (define-datatype proc-val proc-val?
 	[prim-proc
-		(name symbol?)]
+		(name test-prim?)]
 	[lambda-proc
 		(exp expression-o?)])
+	 
+(define test-prim?
+	(lambda (x)
+		(prim-proc? (list x))))
 	 
 (define prim-proc?
 	(lambda (sym)
