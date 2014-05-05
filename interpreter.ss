@@ -71,7 +71,7 @@
 		[app-exp (rator rands) 
 			(let ([proc-value rator]
 					[args 
-						(if (andmap expression? rands)
+						(if (and (list? rands) (andmap expression? rands))
 							(eval-rands rands env)
 							rands)])
 				(if (proc-val? proc-value)
@@ -108,9 +108,37 @@
 (define apply-lambda
 	(lambda (exp args env)
 		(eval-exp exp
-			(extend-env 
-				(cadr exp)
-				args env))))
+			(if (or (symbol? (cadr exp)) (not (list? (cadr exp))))
+					(with-lists (cadr exp) args env)
+					(extend-env 
+						(cadr exp)
+						args env)))))
+						
+(define with-lists 
+	(lambda (vars args env)
+		(cond [(symbol? vars) 
+				(extend-env (list vars) 
+					(list args) env)]
+			[(not (list? vars)) 
+				(let* ([x-vars (get-nice-vars vars)]
+						[x-args (find-correct-args args (get-list-placement vars 0) 0)])
+					(extend-env x-vars x-args env))])))
+					
+(define get-nice-vars
+	(lambda (nls)
+		(cond [(not (pair? nls)) (cons nls '())]
+			[else (cons (car nls) (get-nice-vars (cdr nls)))])))
+			
+(define get-list-placement 
+	(lambda (vars count)
+		(cond [(not (pair? vars)) count]
+			[else (get-list-placement (cdr vars) (+ 1 count))])))
+			
+(define find-correct-args
+	(lambda (args place count)
+		(cond [(equal? count place) 
+				(list args)]
+			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
 
 (define *prim-proc-names* 
 	'(+ - add1 sub1 cons = * / zero? not and or < > <= >= list null? assq eq? equal? atom? 

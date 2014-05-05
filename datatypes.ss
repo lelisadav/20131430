@@ -9,7 +9,7 @@
 	(var-exp
 		(id symbol?))
 	(lambda-exp
-		(id (list-of check-lam?))
+		(id check-lam?)
 		(body (list-of expression-o?)))
 	(set!-exp
 		(change expression?)
@@ -80,7 +80,10 @@
 				[(eqv? (car prim-procs) (car sym)) #t]
 				[else (loop sym (cdr prim-procs))]))))
 	 
-
+;Checks the lambda.	
+(define check-lam?
+	(lambda (item)
+		(or (symbol? item) (null? item) (pair? item) (list? item))))
 	
 ;; environment type definitions
 

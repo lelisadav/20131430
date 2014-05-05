@@ -23,11 +23,6 @@
   (lambda (exp)
     (and (pair? exp) (eq? (car exp) 'quote))))		
 
-;Checks the lambda.	
-(define check-lam?
-	(lambda (item)
-		(or (symbol? item) (null? item))))
-
 (define parse-exp
 	(lambda (datum)
 		(cond
@@ -43,10 +38,8 @@
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: set! expression: ~s" datum))]
 					[(eqv? (car datum) 'lambda) 
-						(if (check-lambda? datum)
-							(if (pair? (cadr datum))  
-								(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum))))
-								(multi-lambda-exp (cadr datum) (map parse-exp (cddr datum))))
+						(if (check-valid-arg? (cadr datum))
+							(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum))))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: lambda expression: ~s" datum))]
 					[(eqv? (car datum) 'let)
@@ -212,16 +205,13 @@
 			[(symbol? (car datum)) (and (equal? (length datum) 2) (expression? (parse-exp (cadr datum))))]
 			[else (and (check-let? (cdr datum)) (check-let? (car datum)))])))
 
-(define check-lambda?
-	(lambda (datum)
-		(and  (check-valid-arg? (cadr datum))
-			(cond [(null? (cddr datum)) #f]
-				[else #t]))))
+
 		
 (define check-valid-arg?
 	(lambda (item)
 		(cond [(null? item) #t]
 			[(symbol? item) #t]
+			[(pair? item) #t]
 			[(not (list? item)) #f]
 			[else (and (check-valid-arg? (car item)) (check-valid-arg? (cdr item)))])))
 			
