@@ -114,7 +114,7 @@
 				
 (define apply-lambda
 	(lambda (exp args env)
-		(printf "apply-lambda\t\t")
+		;(printf "apply-lambda\t\t")
 		(display exp)
 		(newline)
 		(eval-exp exp
@@ -180,10 +180,10 @@
 
 (define eval-one-exp
 	(lambda (x) 
-		(printf "\t")
-		(display x)
-		(newline)
-		(newline)
+		; (printf "\t")
+		; (display x)
+		; (newline)
+		; (newline)
 		
 	(top-level-eval (parse-exp x))))
 
