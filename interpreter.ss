@@ -40,7 +40,7 @@
 									(eval-exp (cadr x)
 										(strike-from-env 
 											(cadr (cadr x))
-											env 0)))
+											env)))
 								(eval-exp x env)))
 							exp) env)])
 					(let loop ([bodies bodies])
