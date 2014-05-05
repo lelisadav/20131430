@@ -55,7 +55,7 @@
 	; (printf "list-of?\n\n")
 	; (display ls)
 	(cond
-	[(not(list? ls)) (printf "not a list\n")(pred? ls)]
+	[(not(list? ls)) (pred? ls)]
 	[else
 	(or(andmap pred ls) (pred ls))]))))
 (define expression-o?
