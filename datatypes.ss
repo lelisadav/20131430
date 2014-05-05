@@ -10,7 +10,7 @@
 		(id symbol?))
 	(lambda-exp
 		(id (list-of check-lam?))
-		(body (list-of expression?)))
+		(body (list-of expression-o?)))
 	(set!-exp
 		(change expression?)
 		(to expression?))
@@ -23,7 +23,7 @@
 		; (body (list-of? expression)))
 	(let-exp
 		(vars (list-of symbol?))
-		(vals (list-of expression?))
+		(vals (list-of expression-o?))
 		(body (list-of expression?)))
 	[let*-exp 
 		(vars (list-of symbol?))

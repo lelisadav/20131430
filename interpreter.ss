@@ -34,7 +34,11 @@
 		[let-exp (vars exp bodies)
 			(let ([new-env 
 					(extend-env vars 
-						(map (lambda (x) (eval-exp x env)) exp) env)])
+						(map (lambda (x) 
+							(if (and (list? x) (proc-val? x))
+								(eval-exp (cadr x) env)
+								(eval-exp x env)))
+							exp) env)])
 					(let loop ([bodies bodies])
 						(if (null? (cdr bodies))
 							(eval-exp (car bodies) new-env)

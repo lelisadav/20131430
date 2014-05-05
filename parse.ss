@@ -1,12 +1,7 @@
 ;Rose Reatherford, Assignment 3
 ;Problem #2
 
-;(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
-
-;(load "chez-init.ss") ; remove this isf using Dr. Scheme EoPL language
-
-
-
+;Sees if the item is a literal.
 (define lit?
 	(lambda (x)
 		(cond
@@ -22,10 +17,13 @@
 		[(vector? x)  #t]
 		[else #f]
 		)))
+		
+;Sees if the item is quoted.
 (define quoted? 
   (lambda (exp)
     (and (pair? exp) (eq? (car exp) 'quote))))		
-		
+
+;Checks the lambda.	
 (define check-lam?
 	(lambda (item)
 		(or (symbol? item) (null? item))))
@@ -47,7 +45,7 @@
 					[(eqv? (car datum) 'lambda) 
 						(if (check-lambda? datum)
 							(if (pair? (cadr datum))  
-								(lambda-exp (cadr datum) (map parse-exp (cddr datum)))
+								(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum))))
 								(multi-lambda-exp (cadr datum) (map parse-exp (cddr datum))))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: lambda expression: ~s" datum))]
