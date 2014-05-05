@@ -41,8 +41,8 @@
 		(condition expression?)
 		(if-true expression?))
 	(app-exp
-		(rator expression?)
-		(rand (list-of expression?)))
+		(rator expression-o?)
+		(rand (list-of expression-o?)))
 	(lit-exp 
 		(item lit?)))
 
