@@ -4,6 +4,38 @@
 	(lambda ()
 		(empty-env-record)))
 		
+(define strike-from-env
+	(lambda (vars env)
+		(let* ([ls-co (map (lambda (x) (find-front x (cadr env) 0)) vars)]
+				[sort-ls (sort (car ls-co) (cdr ls-co))])
+			((car env) (strike ls-co (cadr env) 0) (strike ls-co (caddr env) 0)))))
+		
+(define find-front
+	(lambda (var env count)
+		(if (equal? var (car env))
+			count
+			(find-front var (cdr env) (+ 1 count)))))
+			
+(define strike
+	(lambda (ls env count)
+		(cond [(null? ls) env]
+			[(equal? count (car ls)) 
+				(strike (cdr ls) (cdr env) (+ 1 count))]
+			[else (cons (car env) (strike ls (cdr env) (+ 1 count)))])))
+			
+(define sort
+	(lambda (ls)
+		(if (null? ls) 
+			'()
+			(let ([smallest (find-smallest (car ls) (cdr ls))])
+				(cons smallest (sort (cdr ls)))))))
+				
+(define find-smallest
+	(lambda (cur ls)
+		(cond [(null? ls) cur]
+			[(> cur (car ls)) (find-smallest (car ls) (cdr ls))]
+			[else (find-smallest cur (cdr ls))])))
+			
 (define global-env 
 	init-env)
 

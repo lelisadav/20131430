@@ -36,7 +36,11 @@
 					(extend-env vars 
 						(map (lambda (x) 
 							(if (and (list? x) (proc-val? x))
-								(eval-exp (cadr x) env)
+								(lambda-proc 
+									(eval-exp (cadr x)
+										(strike-from-env 
+											(cadr (cadr x))
+											env 0)))
 								(eval-exp x env)))
 							exp) env)])
 					(let loop ([bodies bodies])
