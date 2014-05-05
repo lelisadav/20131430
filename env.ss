@@ -1,8 +1,8 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
-(define empty-env
-	(lambda ()
-		(empty-env-record)))
+; (define empty-env
+	; (lambda ()
+		; (empty-env-record)))
 		
 (define strike-from-env
 	(lambda (vars env)
@@ -45,9 +45,9 @@
 (define global-env 
 	init-env)
 
-(define extend-env
-	(lambda (syms vals env)
-		(extended-env-record syms vals env)))
+; (define extend-env
+	; (lambda (syms vals env)
+		; (extended-env-record syms vals env)))
 
 (define list-find-position
   (lambda (sym los)
