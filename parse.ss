@@ -4,6 +4,7 @@
 ;Sees if the item is a literal.
 (define lit?
 	(lambda (x)
+	;	(printf "lit?\n")
 		(cond
 		[(quoted? x)  #t]
 		[(list? x) #f]
@@ -21,10 +22,12 @@
 ;Sees if the item is quoted.
 (define quoted? 
   (lambda (exp)
+  ;	(printf "quoted?\n")
     (and (pair? exp) (eq? (car exp) 'quote))))		
 
 (define parse-exp
 	(lambda (datum)
+	;	(printf "parse-exp\n")
 		(cond
 			[(symbol? datum) (var-exp datum)]
 			[(lit? datum) (lit-exp datum)]
@@ -150,6 +153,7 @@
 
 (define unparse-exp ; an inverse for parse-exp
   (lambda (exp)
+  ;	(printf "unparse-exp\n")
     (cases expression exp
       (var-exp (id) id)
       (lambda-exp (id body) 
@@ -159,17 +163,20 @@
 			(append (list 'lambda id)
 			(map unparse-exp body)))
 		(let-exp (vars vals body)
-				(let ([merged (merge vars (map unparse-exp vals))])
+				(let* ([unparsevals (map unparse-exp vals)]
+				[merged (map (lambda (x y) (list x y)) vars unparsevals)])
 				(append (list 'let merged) 
 							(map unparse-exp body)))
 			)
 		(let*-exp (vars vals body)
-			(let ([merged (merge vars (map unparse-exp vals))])
+			(let* ([unparsevals (map unparse-exp vals)]
+			[merged (map (lambda (x y) (list x y)) vars unparsevals)])
 				(append (list 'let* merged) 
 					(map unparse-exp body)))
 		)
 		(letrec-exp (vars vals body)
-			(let ([merged (merge vars (map unparse-exp vals))])
+			(let* ([unparsevals (map unparse-exp vals)]
+			[merged (map (lambda (x y) (list x y)) vars unparsevals)])
 				(append (list 'letrec merged) 
 					(map unparse-exp body)))
 			)
@@ -188,6 +195,7 @@
 
 (define occurs-free? ; in parsed expression
   (lambda (var exp)
+  ;	(printf "occurs-free?\n")
     (cases expression exp
       (var-exp (id) (eqv? id var))
       (lambda-exp (id body)
@@ -199,6 +207,7 @@
 			
 (define check-let?
 	(lambda (datum)
+		;(printf "check-let?\n")
 		(cond [(null? datum) #t]
 			[(not (list? datum)) #f]
 			[(number? (car datum)) #f]
@@ -209,6 +218,7 @@
 		
 (define check-valid-arg?
 	(lambda (item)
+	;	(printf "check-valid-arg?\n")
 		(cond [(null? item) #t]
 			[(symbol? item) #t]
 			[(pair? item) #t]
@@ -217,15 +227,18 @@
 			
 (define check-if?
 	(lambda (datum)
+	;	(printf "check-if?\n")
 		(cond [(null? (cddr datum)) #f]
 			[else #t])))
 			
 (define check-set?
 	(lambda (datum)
+	;	(printf "check-set?\n")
 		(equal? (length datum) 2)))
 (define split 
     (lambda (ls)
+	;	(printf "split\n")
       (list (map (lambda (x) (car x)) ls) (map (lambda (y) (cadr y)) ls))))
-(define merge 
-	(lambda (ls1 ls2)
-	 (map (lambda (x y) (list x y)) ls1 ls2)))
+; (define merge 
+	; (lambda (ls1 ls2)
+	 ; (map (lambda (x y) (list x y)) ls1 ls2)))

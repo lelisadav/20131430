@@ -324,6 +324,14 @@
 ;#by loading this file (and your solution) and typing (r)
 
 (define (run-all)
+  ; (trace list-of? expression-o? test-prim? prim-proc? check-lam? scheme-value? empty-env
+; strike-from-env find-front strike sort find-smallest extend-env list-find-position 
+; apply-env top-level-eval eval-exp last eval-rands apply-proc apply-lambda with-lists
+; get-nice-vars get-list-placement find-correct-args rep eval-one-exp lit? quoted? parse-exp
+; unparse-exp occurs-free? check-let? check-valid-arg? check-if? check-set? split
+; apply-prim-proc apply-switch apply-all apply-all-num zero?-def not-def and-def or-def null?-def assq-def
+; atom?-def length-def list->vector-def list?-def vector->list-def vector-ref-def list-def)
+;(trace apply-lambda extend-env)
   (display 'literals) 
   (test-literals)
   (display 'quote) 

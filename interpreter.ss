@@ -4,11 +4,14 @@
 ; caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 ; cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
 ; cddadr cddar cdddar cddddr cdddr cddr cdr 
+
 (define extend-env
 	(lambda (syms vals env)
+		;(printf "extend-env\n")
 		(extended-env-record syms vals env)))
 (define empty-env
 	(lambda ()
+	
 		(empty-env-record)))
 (define top-level-eval
   (lambda (form)
@@ -19,6 +22,7 @@
 
 (define eval-exp
   (lambda (exp env)
+  ;(printf "eval-exp\n")
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
@@ -82,12 +86,14 @@
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
+	;(printf "last\n")
 		(cond [(null? (cdr ls)) (car ls)]
 			[else (last (cdr ls))])))
 		
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
   (lambda (rands env)
+  	;(printf "eval-rands\n")
     (map (lambda (x) (eval-exp x env))
 		rands)))
 
@@ -97,6 +103,7 @@
 
 (define apply-proc
 	(lambda (proc-value args env)
+		;(printf "apply-proc\n")
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc (la) (apply-lambda la args env)]
@@ -107,6 +114,9 @@
 				
 (define apply-lambda
 	(lambda (exp args env)
+		(printf "apply-lambda\t\t")
+		(display exp)
+		(newline)
 		(eval-exp exp
 			(if (or (symbol? (cadr exp)) (not (list? (cadr exp))))
 					(with-lists (cadr exp) args env)
@@ -116,6 +126,7 @@
 						
 (define with-lists 
 	(lambda (vars args env)
+		;(printf "with-lists\n")
 		(cond [(symbol? vars) 
 				(extend-env (list vars) 
 					(list args) env)]
@@ -126,16 +137,19 @@
 					
 (define get-nice-vars
 	(lambda (nls)
+		;(printf "get-nice-vars\n")
 		(cond [(not (pair? nls)) (cons nls '())]
 			[else (cons (car nls) (get-nice-vars (cdr nls)))])))
 			
 (define get-list-placement 
 	(lambda (vars count)
+		;(printf "get-list-placement\n")
 		(cond [(not (pair? vars)) count]
 			[else (get-list-placement (cdr vars) (+ 1 count))])))
 			
 (define find-correct-args
 	(lambda (args place count)
+		;(printf "find-correct-args\n")
 		(cond [(equal? count place) 
 				(list args)]
 			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
@@ -166,24 +180,81 @@
 
 (define eval-one-exp
 	(lambda (x) 
-		;(display x)
-		;(newline)
+		(printf "\t")
+		(display x)
+		(newline)
+		(newline)
+		
 	(top-level-eval (parse-exp x))))
+
+; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
 
 		
+(define strike-from-env
+	(lambda (vars env)
+		;(printf "strike-from-env\n")
+		(let* ([ls-co (map (lambda (x) (find-front x (cadr env) 0)) vars)]
+				[sort-ls (sort (car ls-co) (cdr ls-co))])
+			(if (null? sort-ls)
+				env
+				((car env) (strike ls-co (cadr env) 0) (strike ls-co (caddr env) 0))))))
+		
+(define find-front
+	(lambda (var env count)
+		;(printf "find-front\n")
+		(if (null? env)
+			-1
+			(if (equal? var (car env))
+				count
+				(find-front var (cdr env) (+ 1 count))))))
+			
+(define strike
+	(lambda (ls env count)
+		;(printf "strike\n")
+		(cond [(null? ls) env]
+			[(equal? count (car ls)) 
+				(strike (cdr ls) (cdr env) (+ 1 count))]
+			[else (cons (car env) (strike ls (cdr env) (+ 1 count)))])))
+			
+(define sort
+	(lambda (ls)
+		;(printf "sort\n")
+		(if (null? ls) 
+			'()
+			(let ([smallest (find-smallest (car ls) (cdr ls))])
+				(if (equal? smallest -1)
+					(sort (cdr ls))
+					(cons smallest (sort (cdr ls))))))))
+				
+(define find-smallest
+	(lambda (cur ls)
+		;(printf "find-smallest\n")
+		(cond [(null? ls) cur]
+			[(> cur (car ls)) (find-smallest (car ls) (cdr ls))]
+			[else (find-smallest cur (cdr ls))])))
+			
 (define global-env 
 	init-env)
 
+; (define extend-env
+	; (lambda (syms vals env)
+		; (extended-env-record syms vals env)))
 
 (define list-find-position
   (lambda (sym los)
+  	;(printf "list-find-position\t\t")
+	(display sym)
+	(newline)
     (list-index (lambda (xsym) (eqv? sym xsym)) los)))
 
 (define list-index
   (lambda (pred ls)
+  	; (printf "list-index\t\t")
+	; (display pred)
+	; (newline)
     (cond
      ((null? ls) #f)
      ((pred (car ls)) 0)
@@ -194,6 +265,7 @@
 
 (define apply-env
 	(lambda (env sym succeed fail) 
+		;(printf "apply-env\n")
 		(cases environment env
 			(empty-env-record ()
 				(fail))
@@ -204,6 +276,7 @@
 						(apply-env env sym succeed fail)))))))
 
 
+		
 
 
 

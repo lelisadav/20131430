@@ -14,6 +14,7 @@
 
 (define apply-prim-proc
 	(lambda (prim-proc args)
+		;(printf "apply-prim-proc\n")
 		(case prim-proc
 		    [(+) (apply-all + args 0)]
 		    [(-) (apply-switch - + args 0)]
@@ -98,6 +99,7 @@
 ;For procedures like '-' which much switch between plus and minus.
 (define apply-switch
 	(lambda (proc1 proc2 args null-value)
+		;(printf "apply-switch\n")
 			(if (null? args) 
 				null-value
 				(proc1 (car args) 
@@ -105,6 +107,7 @@
 				
 (define apply-all 
 	(lambda (proc args null-value)
+		;(printf "apply-all\n")
 		(if (null? args)
 			null-value
 			(proc (car args) 
@@ -112,6 +115,7 @@
 
 (define apply-all-num
 	(lambda (proc args)
+		;(printf "apply-all-num\n")
 		(if (= 2(length args))
 			(proc (car args) (cadr args))
 			(and (proc (car args) (cadr args)) (apply-all-num proc (cdr args))))))

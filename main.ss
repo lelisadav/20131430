@@ -15,7 +15,7 @@
 	;(printf "primitives.ss loaded properly.\n")
 	(load "interpreter.ss")
 	;(printf "interpreter.ss loaded properly.\n")
-    (load "env.ss")
+    ;(load "env.ss")
 	;(printf "env.ss loaded properly.\n")
 	(load "A15-test-code.ss")
 	
