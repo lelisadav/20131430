@@ -28,6 +28,8 @@
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
 				datum)]
+		; [proc-in-list-exp (id)
+			; (unevaluated-proc id)]
 		[var-exp (id)
 			(apply-env env id
 				(lambda (x) x)

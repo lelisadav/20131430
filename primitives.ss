@@ -47,7 +47,7 @@
 			[(list->vector) (list->vector-def (car args))]
 			[(list?) (list?-def (car args))]
 			[(pair?) (pair? (car args))]
-			[(procedure?) (procedure? (car args))]
+			[(procedure?) (procedure?-def (car args))]
 			[(vector->list) (vector->list-def (car args))]
 			[(vector) (vector-def args)]
 			[(make-vector) (if (length (= 2 (length args))) 
@@ -200,6 +200,12 @@
 		(helper vec 0))))
 (define list-def
 	(lambda (args)
+		(newline)
+		(newline)
+		(printf "\t\t\t")
+		(display args)
+		(newline)
+		(newline)
 		(letrec (
 			[helper 
 				(lambda (args)
@@ -209,3 +215,7 @@
 		(helper args))))
 
 ;(trace apply-prim-proc zero?-def not-def)
+(define procedure?-def
+	(lambda (args)
+		(proc-val? args)
+		))

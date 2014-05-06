@@ -8,6 +8,8 @@
 (define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
 	(var-exp
 		(id symbol?))
+	; (proc-in-list-exp
+		; (id prim-proc?))
 	(lambda-exp
 		(id check-lam?)
 		(body (list-of expression-o?)))
@@ -69,7 +71,10 @@
 		(exp expression-o?)]
 	[lambda-proc-with-env
 		(exp proc-val?)
-		(env environment?)])
+		(env environment?)]
+	; [unevaluated-proc
+		; (name test-prim?)]
+	)
 	 
 (define test-prim?
 	(lambda (x)

@@ -29,7 +29,12 @@
 	(lambda (datum)
 		;(printf "Attempting to parse exp ") (display datum) (newline)
 		(cond
-			[(symbol? datum) (var-exp datum)]
+			[(symbol? datum)
+				; (cond
+					; [(prim-proc? datum) (proc-in-list-exp datum)]
+					; [else (var-exp datum)])
+				(var-exp datum)
+			]
 			[(lit? datum) (lit-exp datum)]
 			[(not (list? datum)) 
 				(eopl:error 'parse-exp
@@ -156,6 +161,7 @@
   ;	(printf "unparse-exp\n")
     (cases expression exp
       (var-exp (id) id)
+	  ; (proc-in-list-exp (id) id)
       (lambda-exp (id body) 
         (append (list 'lambda id)
           (map unparse-exp body)))
