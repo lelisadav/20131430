@@ -27,9 +27,8 @@
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
 				datum)]
-		[proc-in-list-exp (id)
-			(printf "\n\n\t\tYou are here.\n")
-			(unevaluated-proc id)]
+		; [proc-in-list-exp (id)
+			 ; id]
 		[var-exp (id)
 			(apply-env env id
 				(lambda (x) x)
@@ -79,7 +78,7 @@
 		[app-exp (rator rands) 
 			; (printf "\tMy rator is: ") (display rator) (newline)
 			; (printf "\t\tMy rands are: ") (display rands) (newline)
-			(let ([proc-value 
+			(let* ([proc-value 
 						(if (proc-val? rator)
 							(begin (printf "I did NOT evaluate the rator.") (newline)
 							rator
@@ -92,7 +91,13 @@
 					[args 
 						(if (and (list? rands) (andmap expression? rands))
 							(eval-rands rands env)
-							rands)])
+							rands)]
+					; [replaced-proc-value 
+							; (map (lambda (x) (if (expression? x) (cases expression x
+								; (proc-in-list-exp (id) (prim-proc id)) (else x)) x)) proc-value)]
+								)
+					
+					
 				(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
 				(apply-proc proc-value args env))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
@@ -127,7 +132,7 @@
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc (la) (apply-lambda la args env)]
 			[lambda-proc-with-env (la envi) (apply-lambda (cadr la) args envi)]
-			[unevaluated-proc (name) (printf "\n\tunevaluated-proc\n") (display name) name]
+			; [unevaluated-proc (bodys) (printf "\n\tunevaluated-proc\n") (display bodys) bodys]
 			; You will add other cases
 			[else (error 'apply-proc
                 "Attempt to apply bad procedure: ~s" 

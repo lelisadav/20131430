@@ -36,10 +36,14 @@
 				; (printf "\tchildoflist: ")
 				; (display childoflist)
 				; (newline)
-				(cond
-					[(and (not (null? childoflist))(car childoflist) (test-prim? datum)) (proc-in-list-exp datum)]
-					[else (var-exp datum)])
-				; (var-exp datum)
+				; (cond
+					; [(and (not (null? childoflist))(car childoflist) (test-prim? datum)) 
+					; (unevaluated-proc
+					; (proc-in-list-exp datum)
+					; ]
+					; [else (var-exp datum)]
+					; )
+				(var-exp datum)
 			]
 			[(lit? datum) (lit-exp datum)]
 			[(not (list? datum)) 
@@ -158,7 +162,9 @@
 								"Error in parse-exp: if expression: ~s" datum))]
 					[else (app-exp
 						(parse-exp (car datum))
-						(map parse-exp (cdr datum) (make-list (length (cdr datum)) #t)))])]
+						(map parse-exp (cdr datum) 
+						; (make-list (length (cdr datum)) #t)
+						))])]
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
 
@@ -167,7 +173,7 @@
   ;	(printf "unparse-exp\n")
     (cases expression exp
       (var-exp (id) id)
-	  (proc-in-list-exp (id) id)
+	  ; (proc-in-list-exp (id) id)
       (lambda-exp (id body) 
         (append (list 'lambda id)
           (map unparse-exp body)))
