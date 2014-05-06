@@ -5,42 +5,44 @@
 		; (empty-env-record)))
 		
 (define strike-from-env
-	(lambda (vars env)
-		(let* ([ls-co (map (lambda (x) (find-front x (cadr env) 0)) vars)]
-				[sort-ls (sort (car ls-co) (cdr ls-co))])
-			(if (null? sort-ls)
-				env
-				((car env) (strike ls-co (cadr env) 0) (strike ls-co (caddr env) 0))))))
+	(lambda (var env)
+		(strike-from-e var env 
+			(lambda (x)
+				x))))
 		
-(define find-front
-	(lambda (var env count)
-		(if (null? env)
-			-1
-			(if (equal? var (car env))
-				count
-				(find-front var (cdr env) (+ 1 count))))))
-			
-(define strike
-	(lambda (ls env count)
-		(cond [(null? ls) env]
-			[(equal? count (car ls)) 
-				(strike (cdr ls) (cdr env) (+ 1 count))]
-			[else (cons (car env) (strike ls (cdr env) (+ 1 count)))])))
-			
-(define sort
-	(lambda (ls)
-		(if (null? ls) 
-			'()
-			(let ([smallest (find-smallest (car ls) (cdr ls))])
-				(if (equal? smallest -1)
-					(sort (cdr ls))
-					(cons smallest (sort (cdr ls))))))))
+(define strike-from-e
+	(lambda (var env fail)
+		(cases environment env
+			(empty-env-record () (fail env))
+			(extended-env-record (syms vals envi)
+				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) var))])
+					(if (andmap number? pos)
+						(extended-env-record 
+							(strike pos syms 0) (strike pos vals 0)
+							(strike-from-e var envi 
+								(lambda (x)
+									(fail
+										(extended-env-record syms vals
+											x)))))
+						(extended-env-record syms vals
+							(strike-from-e var envi 
+								(lambda (x)
+									(fail
+										(extended-env-record syms vals
+											x)))))))))))
 				
-(define find-smallest
-	(lambda (cur ls)
-		(cond [(null? ls) cur]
-			[(> cur (car ls)) (find-smallest (car ls) (cdr ls))]
-			[else (find-smallest cur (cdr ls))])))
+(define strike
+	(lambda (pos ls count)
+		(cond [(null? ls) '()]
+			[(map (lambda (x) (equal? x count)) pos)
+				(strike pos (cdr ls) (+ 1 count))]
+			[else (cons (car ls) (strike pos (cdr ls) (+ 1 count)))])))
+			
+(define remove-not-number
+	(lambda (ls)
+		(cond [(null? ls) '()]
+			[(not (number? (car ls))) (remove-not-number (cdr ls))]
+			[else (cons (car ls) (remove-not-number (cdr ls)))])))
 			
 (define global-env 
 	init-env)

@@ -27,7 +27,7 @@
 
 (define parse-exp
 	(lambda (datum)
-	;	(printf "parse-exp\n")
+		;(printf "Attempting to parse exp ") (display datum) (newline)
 		(cond
 			[(symbol? datum) (var-exp datum)]
 			[(lit? datum) (lit-exp datum)]

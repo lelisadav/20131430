@@ -66,7 +66,10 @@
 	[prim-proc
 		(name test-prim?)]
 	[lambda-proc
-		(exp expression-o?)])
+		(exp expression-o?)]
+	[lambda-proc-with-env
+		(exp proc-val?)
+		(env environment?)])
 	 
 (define test-prim?
 	(lambda (x)
