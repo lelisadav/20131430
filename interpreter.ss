@@ -33,18 +33,19 @@
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-						(lambda () (eopl:error 'apply-env ; procedure to call if id not in env
-							"variable not found in environment: ~s" id)))))]
+					(lambda (x) x))))]
+						;(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
+							;"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			;(printf "I am now in let, evaluating ") (display vars) (newline) ;(printf ", which has the args of ") (display exp) (newline)
 			(let ([new-env 
 					(extend-env vars 
 						(map (lambda (x) 
 							(if (and (list? x) (proc-val? x))
-								(eval-exp (cadr x)
-										(strike-from-env 
+								(let ([envir (strike-from-env 
 												(cadr (cadr x))
-												env))
+												env)])
+									(eval-exp (cadr x) envir))
 								(eval-exp x env)))
 							exp) env)])
 					(let loop ([bodies bodies])
@@ -60,7 +61,7 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			(printf "I am now in lambda, evaluating ") (display params) (newline)
+			;(printf "I am now in lambda, evaluating ") (display params) (newline)
 			(last (map (lambda (x) 
 				(if (expression? x)
 					(eval-exp x env)
@@ -84,7 +85,7 @@
 						(if (and (list? rands) (andmap expression? rands))
 							(eval-rands rands env)
 							rands)])
-				(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline)
+				;(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
 				(apply-proc proc-value args env))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 

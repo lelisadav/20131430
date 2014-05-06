@@ -6,35 +6,26 @@
 		
 (define strike-from-env
 	(lambda (var env)
-		(strike-from-e var env 
-			(lambda (x)
-				x))))
+		(strike-from-e var env)))
 		
 (define strike-from-e
-	(lambda (var env fail)
+	(lambda (var env)
 		(cases environment env
-			(empty-env-record () (fail env))
+			(empty-env-record () env)
 			(extended-env-record (syms vals envi)
 				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) var))])
 					(if (andmap number? pos)
 						(extended-env-record 
 							(strike pos syms 0) (strike pos vals 0)
-							(strike-from-e var envi 
-								(lambda (x)
-									(fail
-										(extended-env-record syms vals
-											x)))))
+							(strike-from-e var envi))
 						(extended-env-record syms vals
-							(strike-from-e var envi 
-								(lambda (x)
-									(fail
-										(extended-env-record syms vals
-											x)))))))))))
+							(extended-env-record syms vals
+								(strike-from-e var envi)))))))))
 				
 (define strike
 	(lambda (pos ls count)
 		(cond [(null? ls) '()]
-			[(map (lambda (x) (equal? x count)) pos)
+			[(ormap (lambda (x) (equal? x count)) pos)
 				(strike pos (cdr ls) (+ 1 count))]
 			[else (cons (car ls) (strike pos (cdr ls) (+ 1 count)))])))
 			
