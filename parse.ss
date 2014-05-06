@@ -50,9 +50,7 @@
 				(eopl:error 'parse-exp
 					"Error in parse-exp: application ~s is not a proper list" datum)]
 			[(pair? datum)
-				(cond [(eqv? (car datum) 'list)
-						(proc-in-list-exp (map parse-exp (cdr datum)))]
-					[(eqv? (car datum) 'set!)
+				(cond [(eqv? (car datum) 'set!)
 						(if (check-set? (cdr datum))
 							(set!-exp (parse-exp (cadr datum) ) (parse-exp (caddr datum) ))
 							(eopl:error 'parse-exp 
