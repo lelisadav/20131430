@@ -208,7 +208,7 @@
 			   (if (null? x) 
 			       '() 
 			       (cons (procedure? (car x)) (g (cdr x))))))])
-		((Y H) (list list (lambda (x) x) 'list))))
+		((Y H) (list list (lambda (t) t) 'list))))
 	     )])
       (display-results correct answers equal?)))
 

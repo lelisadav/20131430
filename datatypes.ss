@@ -8,8 +8,8 @@
 (define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
 	(var-exp
 		(id symbol?))
-	; (proc-in-list-exp
-		; (id prim-proc?))
+	(proc-in-list-exp
+		(id symbol?))
 	(lambda-exp
 		(id check-lam?)
 		(body (list-of expression-o?)))
@@ -72,16 +72,38 @@
 	[lambda-proc-with-env
 		(exp proc-val?)
 		(env environment?)]
-	; [unevaluated-proc
-		; (name test-prim?)]
+	[unevaluated-proc
+		(exp proc-in-list?)]
 	)
-	 
+
+(define proc-in-list?
+	(lambda (x)
+		(cases expression x
+			(proc-in-list-exp (id) #t)
+			(var-exp (id) #f)
+			(lambda-exp (id body) #f)
+			(set!-exp (change to) #f)
+			(multi-lambda-exp (id body) #f)
+			(let-exp (vars vals body) #f)
+			(let*-exp (vars vals body) #f)
+			(letrec-exp (vars vals body) #f)
+			(if-else-exp (con true false) #f)
+			(if-exp-null (con true) #f)
+			(app-exp (rator rand) #f)
+			(lit-exp (item) #f)
+			)))
 (define test-prim?
 	(lambda (x)
 		(prim-proc? (list x))))
 	 
 (define prim-proc?
 	(lambda (sym)
+		; (newline)
+		; (newline)
+		; (printf "\t\tprim-proc?:\t")
+		; (display sym)
+		; (newline)
+		; (newline)
 		(let loop ([sym sym]
 				[prim-procs *prim-proc-names*])
 			(cond [(null? prim-procs) #f]

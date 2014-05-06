@@ -217,5 +217,8 @@
 ;(trace apply-prim-proc zero?-def not-def)
 (define procedure?-def
 	(lambda (args)
+		(printf "procedure?-def: ")
+		(display args)
+		(newline)
 		(proc-val? args)
 		))

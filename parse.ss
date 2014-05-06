@@ -26,14 +26,20 @@
     (and (pair? exp) (eq? (car exp) 'quote))))		
 
 (define parse-exp
-	(lambda (datum)
-		;(printf "Attempting to parse exp ") (display datum) (newline)
+	(lambda (datum . childoflist)
+		; (printf "Attempting to parse exp ") (display datum) (newline)
 		(cond
 			[(symbol? datum)
-				; (cond
-					; [(prim-proc? datum) (proc-in-list-exp datum)]
-					; [else (var-exp datum)])
-				(var-exp datum)
+				; (newline)
+				; (printf "\tsymbol? datum: ")
+				; (display datum)
+				; (printf "\tchildoflist: ")
+				; (display childoflist)
+				; (newline)
+				(cond
+					[(and (not (null? childoflist))(car childoflist) (test-prim? datum)) (proc-in-list-exp datum)]
+					[else (var-exp datum)])
+				; (var-exp datum)
 			]
 			[(lit? datum) (lit-exp datum)]
 			[(not (list? datum)) 
@@ -42,12 +48,12 @@
 			[(pair? datum)
 				(cond [(eqv? (car datum) 'set!)
 						(if (check-set? (cdr datum))
-							(set!-exp (parse-exp (cadr datum)) (parse-exp (caddr datum)))
+							(set!-exp (parse-exp (cadr datum) ) (parse-exp (caddr datum) ))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: set! expression: ~s" datum))]
 					[(eqv? (car datum) 'lambda) 
 						(if (check-valid-arg? (cadr datum))
-							(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum))))
+							(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum) )))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: lambda expression: ~s" datum))]
 					[(eqv? (car datum) 'let)
@@ -71,7 +77,7 @@
 										[vars (car splitls)]
 										[vals (cadr splitls)]
 										)
-									(let-exp vars (map parse-exp vals) (map parse-exp body)))])]
+									(let-exp vars (map parse-exp vals ) (map parse-exp body )))])]
 								[else 
 									(eopl:error 'parse-exp
 									"declarations in ~s-expression not a list ~s" 'let datum)])]
@@ -96,7 +102,7 @@
 									[splitls (split varvals)]
 									[vars (car splitls)]
 									[vals (cadr splitls)])
-									(let*-exp vars (map parse-exp vals) (map parse-exp body)))])]
+									(let*-exp vars (map parse-exp vals ) (map parse-exp body )))])]
 					[(eqv? (car datum) 'letrec)
 						(cond
 							[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'letrec datum)]
@@ -118,7 +124,7 @@
 									[splitls (split varvals)]
 									[vars (car splitls)]
 									[vals (cadr splitls)])
-									(letrec-exp vars (map parse-exp vals) (map parse-exp body)))])]
+									(letrec-exp vars (map parse-exp vals ) (map parse-exp body )))])]
 					; [(eqv? (car datum) 'let)
 						; (if (check-let? (cadr datum))
 							; (if (null? (cddr datum))
@@ -146,13 +152,13 @@
 					[(eqv? (car datum) 'if)
 						(if (check-if? datum)
 							(if (null? (cdddr datum)) 
-								(if-exp-null (parse-exp (cadr datum)) (parse-exp (caddr datum)))
-								(if-else-exp (parse-exp (cadr datum)) (parse-exp (caddr datum)) (parse-exp (cadddr datum))))
+								(if-exp-null (parse-exp (cadr datum) ) (parse-exp (caddr datum) ))
+								(if-else-exp (parse-exp (cadr datum) ) (parse-exp (caddr datum) ) (parse-exp (cadddr datum) )))
 							(eopl:error 'parse-exp
 								"Error in parse-exp: if expression: ~s" datum))]
 					[else (app-exp
 						(parse-exp (car datum))
-						(map parse-exp (cdr datum)))])]
+						(map parse-exp (cdr datum) (make-list (length (cdr datum)) #t)))])]
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
 
@@ -161,7 +167,7 @@
   ;	(printf "unparse-exp\n")
     (cases expression exp
       (var-exp (id) id)
-	  ; (proc-in-list-exp (id) id)
+	  (proc-in-list-exp (id) id)
       (lambda-exp (id body) 
         (append (list 'lambda id)
           (map unparse-exp body)))
