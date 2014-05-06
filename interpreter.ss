@@ -21,7 +21,7 @@
 
 (define eval-exp
   (lambda (exp env)
-	(printf "Beginning evaluation of: ") (display exp) (newline)
+	; (printf "Beginning evaluation of: ") (display exp) (newline)
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
@@ -38,7 +38,7 @@
 						;(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							;"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
-			(printf "I am now in let, evaluating ") (display vars) (newline) ;(printf ", which has the args of ") (display exp) (newline)
+			; (printf "I am now in let, evaluating ") (display vars) (newline) ;(printf ", which has the args of ") (display exp) (newline)
 			(let ([new-env 
 					(extend-env vars 
 						(map (lambda (x) 
@@ -62,7 +62,7 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			(printf "I am now in lambda, evaluating ") (display params) (newline)
+			; (printf "I am now in lambda, evaluating ") (display params) (newline)
 			(last (map (lambda (x) 
 				(if (expression? x)
 					(eval-exp x env)
@@ -80,12 +80,12 @@
 			; (printf "\t\tMy rands are: ") (display rands) (newline)
 			(let* ([proc-value 
 						(if (proc-val? rator)
-							(begin (printf "I did NOT evaluate the rator.") (newline)
+							; (begin (printf "I did NOT evaluate the rator.") (newline)
 							rator
-							)
-							(begin (printf "I needed to evaluate the rator! ") (newline)
+							; )
+							; (begin (printf "I needed to evaluate the rator! ") (newline)
 							(eval-exp rator env)
-							)
+							; )
 							
 						)]
 					[args 
@@ -98,7 +98,7 @@
 								)
 					
 					
-				(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
+				; (printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
 				(apply-proc proc-value args env))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
@@ -123,11 +123,12 @@
 
 (define apply-proc
 	(lambda (proc-value args env)
-		(printf "apply-proc\n\t\t")
-		(display proc-value)
-		(printf "\n\t\t")
-		(display args)
-		(newline)
+		; (printf "apply-proc\t\t")
+		 ; (display proc-value)
+		  ; (printf "\n\t\t")
+		 ; (display args)
+		; (newline)
+		; (newline)
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc (la) (apply-lambda la args env)]

@@ -59,60 +59,60 @@
 
 (define (test-primitive-procedures)
     (let ([correct '(
-		     ; 10
-		     ; 7
-		     ; 48
-		     ; 3
-		     ; 10
-		     ; #t
-		     ; #f
-		     ; #t
-		     ; (a . b)
-		     ; b
-		     ; (a b c)
-		     ; #t
-		     ; #t
-		     ; #t
-		     ; 5
-		     ; #(a b c)
-		     ; #f
-		     ; #t
-		     ; (a b c)
-		     ; #t
-		     ; #t
-		     ; (#t #f)
-		     ; a
-		     ; c
-		     ; b
+		     10
+		     7
+		     48
+		     3
+		     10
+		     #t
+		     #f
+		     #t
+		     (a . b)
+		     b
+		     (a b c)
+		     #t
+		     #t
+		     #t
+		     5
+		     #(a b c)
+		     #f
+		     #t
+		     (a b c)
+		     #t
+		     #t
+		     (#t #f)
+		     a
+		     c
+		     b
 		     (#t #t #f)
 		     )]
           [answers 
             (list 
-	     ; (eval-one-exp '(+ (+ 1 2) 3 4))
-	     ; (eval-one-exp '(- 10 1 (- 5 3)))
-	     ; (eval-one-exp '(* 2 (* 3 4) 2))
-	     ; (eval-one-exp '(/ 6 2))
-	     ; (eval-one-exp '(sub1 (add1 10)))
-	     ; (eval-one-exp '(not (zero? 3)))
-	     ; (eval-one-exp '(= 3 4))
-	     ; (eval-one-exp '(>= 4 3))
-	     ; (eval-one-exp '(cons 'a 'b))
-	     ; (eval-one-exp '(car (cdr '(a b c))))
-	     ; (eval-one-exp '(list 'a 'b 'c))
-	     ; (eval-one-exp '(null? '()))
-	     ; (eval-one-exp '(eq? 'a 'a))
-	     ; (eval-one-exp '(equal? 'a 'a))
-	     ; (eval-one-exp '(length '(a b c d e)))
-	     ; (eval-one-exp '(list->vector '(a b c)))
-	     ; (eval-one-exp '(list? 'a))
-	     ; (eval-one-exp '(pair? '(a b)))
-	     ; (eval-one-exp '(vector->list '#(a b c)))
-	     ; (eval-one-exp '(vector? '#(a b c)))
-	     ; (eval-one-exp '(number? 5))
-	     ; (list (eval-one-exp '(symbol? 'a)) (eval-one-exp '(symbol? 5)))
-	     ; (eval-one-exp '(caar '((a b) c)))
-	     ; (eval-one-exp '(cadr '((a b) c)))
-	     ; (eval-one-exp '(cadar '((a b) c)))
+	     (eval-one-exp '(+ (+ 1 2) 3 4))
+	     (eval-one-exp '(- 10 1 (- 5 3)))
+	     (eval-one-exp '(* 2 (* 3 4) 2))
+	     (eval-one-exp '(/ 6 2))
+	     (eval-one-exp '(sub1 (add1 10)))
+	     (eval-one-exp '(not (zero? 3)))
+	     (eval-one-exp '(= 3 4))
+	     (eval-one-exp '(>= 4 3))
+	     (eval-one-exp '(cons 'a 'b))
+	     (eval-one-exp '(car (cdr '(a b c))))
+	     (eval-one-exp '(list 'a 'b 'c))
+	     (eval-one-exp '(null? '()))
+	     (eval-one-exp '(eq? 'a 'a))
+	     (eval-one-exp '(equal? 'a 'a))
+	     (eval-one-exp '(length '(a b c d e)))
+	     (eval-one-exp '(list->vector '(a b c)))
+	     (eval-one-exp '(list? 'a))
+	     (eval-one-exp '(pair? '(a b)))
+	     (eval-one-exp '(vector->list '#(a b c)))
+	     (eval-one-exp '(vector? '#(a b c)))
+	     (eval-one-exp '(number? 5))
+	     (list (eval-one-exp '(symbol? 'a)) (eval-one-exp '(symbol? 5)))
+	     (eval-one-exp '(caar '((a b) c)))
+	     (eval-one-exp '(cadr '((a b) c)))
+	     (eval-one-exp '(cadar '((a b) c)))
 	     (eval-one-exp '
 	      (list (procedure? list)
 		    (procedure? (lambda (x y) (list (+ x y))))
@@ -151,50 +151,50 @@
 
 (define (test-lambda)
     (let ([correct '(
-		     ; 6
-		     ; 12
-		     ; a
-		     ; (b c)
-		     ; (9 2 1)
-		     ; two
-		     ; 154
-		     ; 720
+		     6
+		     12
+		     a
+		     (b c)
+		     (9 2 1)
+		     two
+		     154
+		     720
 		     (#t #t #f)
 		     )]
           [answers 
             (list 
-	     ; (eval-one-exp '((lambda (x) (+ 1 x)) 
-			     ; 5))
-	     ; (eval-one-exp '((lambda (x) (+ 1 x) 
-				     ; (+ 2 (* 2 x))) 5))
-	     ; (eval-one-exp '((lambda x (car x)) 
-			     ; 'a 'b 'c))
-	     ; (eval-one-exp '((lambda x (car x) (cdr x)) 
-			     ; 'a 'b 'c))
-	     ; (eval-one-exp '((lambda (x y . z) 
-			       ; (cons (+ x y) (cdr z))) 
-			     ; 5 4 3 2 1))
-	     ; (eval-one-exp ' ((lambda (x y . z) 
-				; (if (> x y) (car z) (cdr z)) (cadr z)) 
-			      ; 5 4 'three 'two 'one))
-	     ; (eval-one-exp ' 
-	      ; ((lambda (a b) 
-		 ; (let ([a (+ a b)] [b (- a b)]) 
-		   ; (let ([f (lambda (a) (+ a b))]) 
-		     ; (f (+ 3 a b))))) 
-	       ; 56 17))
-	     ; (eval-one-exp ' 
-	      ; (((lambda (f) 
-		  ; ((lambda (x) 
-		     ; (f (lambda (y) 
-			  ; ((x x) y)))) 
-		   ; (lambda (x) 
-		     ; (f (lambda (y) 
-			  ; ((x x) y)))))) 
-		; (lambda (g) 
-		  ; (lambda (n) 
-		    ; (if (zero? n) 1 (* n (g (- n 1))))))) 
-	       ; 6))
+	     (eval-one-exp '((lambda (x) (+ 1 x)) 
+			     5))
+	     (eval-one-exp '((lambda (x) (+ 1 x) 
+				     (+ 2 (* 2 x))) 5))
+	     (eval-one-exp '((lambda x (car x)) 
+			     'a 'b 'c))
+	     (eval-one-exp '((lambda x (car x) (cdr x)) 
+			     'a 'b 'c))
+	     (eval-one-exp '((lambda (x y . z) 
+			       (cons (+ x y) (cdr z))) 
+			     5 4 3 2 1))
+	     (eval-one-exp ' ((lambda (x y . z) 
+				(if (> x y) (car z) (cdr z)) (cadr z)) 
+			      5 4 'three 'two 'one))
+	     (eval-one-exp ' 
+	      ((lambda (a b) 
+		 (let ([a (+ a b)] [b (- a b)]) 
+		   (let ([f (lambda (a) (+ a b))]) 
+		     (f (+ 3 a b))))) 
+	       56 17))
+	     (eval-one-exp ' 
+	      (((lambda (f) 
+		  ((lambda (x) 
+		     (f (lambda (y) 
+			  ((x x) y)))) 
+		   (lambda (x) 
+		     (f (lambda (y) 
+			  ((x x) y)))))) 
+		(lambda (g) 
+		  (lambda (n) 
+		    (if (zero? n) 1 (* n (g (- n 1))))))) 
+	       6))
 	     (eval-one-exp ' 
 	      (let ([Y (lambda (f) 
 			 ((lambda (x) 
@@ -208,7 +208,7 @@
 			   (if (null? x) 
 			       '() 
 			       (cons (procedure? (car x)) (g (cdr x))))))])
-		((Y H) (list list (lambda (t) t) 'list))))
+		((Y H) (list list (lambda (x) x) 'list))))
 	     )])
       (display-results correct answers equal?)))
 
@@ -314,8 +314,8 @@
 
 
 (define g test-graph-equal)
-	   
-	  
+
+
      
 
 
@@ -332,19 +332,18 @@
 ; apply-prim-proc apply-switch apply-all apply-all-num zero?-def not-def and-def or-def null?-def assq-def
 ; atom?-def length-def list->vector-def list?-def vector->list-def vector-ref-def list-def)
 ;(trace apply-lambda extend-env)
-  ; (display 'literals) 
-  ; (test-literals)
-  ; (display 'quote) 
-  ; (test-quote)
-  ; (display 'if) 
-  ; (test-if)
-  ; (display 'primitive-procedures) 
-  ; (test-primitive-procedures)    
-  ; (display 'let) 
-  ; (test-let)
+  (display 'literals) 
+  (test-literals)
+  (display 'quote) 
+  (test-quote)
+  (display 'if) 
+  (test-if)
+  (display 'primitive-procedures) 
+  (test-primitive-procedures)    
+  (display 'let) 
+  (test-let)
   (display 'lambda) 
   (test-lambda)
 )
 
 (define r run-all)
-

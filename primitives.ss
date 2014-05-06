@@ -200,12 +200,12 @@
 		(helper vec 0))))
 (define list-def
 	(lambda (args)
-		(newline)
-		(newline)
-		(printf "\t\t\t")
-		(display args)
-		(newline)
-		(newline)
+		; (newline)
+		; (newline)
+		; (printf "\t\t\t")
+		; (display args)
+		; (newline)
+		; (newline)
 		(letrec (
 			[helper 
 				(lambda (args)
@@ -217,8 +217,8 @@
 ;(trace apply-prim-proc zero?-def not-def)
 (define procedure?-def
 	(lambda (args)
-		(printf "procedure?-def: ")
-		(display args)
-		(newline)
+		; (printf "procedure?-def: ")
+		; (display args)
+		; (newline)
 		(proc-val? args)
 		))
