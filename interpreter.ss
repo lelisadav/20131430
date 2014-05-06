@@ -21,15 +21,19 @@
 
 (define eval-exp
   (lambda (exp env)
-	; (printf "Beginning evaluation of: ") (display exp) (newline)
+	;(printf "Beginning evaluation of: ") (display exp) (newline)
     (cases expression exp
 		[lit-exp (datum) 
+			(printf "I went to lit for ") (display datum) (newline) (newline) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
-				datum)]
+				datum)
+				
+				]
 		; [proc-in-list-exp (id)
 			 ; id]
 		[var-exp (id)
+		(printf "I went to var for ") (display id) (newline) (newline) 
 			(apply-env env id
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
@@ -38,6 +42,7 @@
 						;(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							;"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
+			(printf "I am now in let for ") (display vars) (newline) (newline)
 			; (printf "I am now in let, evaluating ") (display vars) (newline) ;(printf ", which has the args of ") (display exp) (newline)
 			(let ([new-env 
 					(extend-env vars 
@@ -55,6 +60,7 @@
 							(begin (eval-exp (car bodies) new-env)
 								(loop (cdr bodies))))))]
 		[if-else-exp (test-exp then-exp else-exp)
+			(printf "I am now in if, testing ") (display test-exp) (newline) (newline)
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env)
 				(eval-exp else-exp env))]
@@ -62,7 +68,7 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
-			; (printf "I am now in lambda, evaluating ") (display params) (newline)
+			(printf "I am now in lambda, evaluating ") (display params) (newline) (newline)
 			(last (map (lambda (x) 
 				(if (expression? x)
 					(eval-exp x env)
@@ -76,10 +82,8 @@
 						(begin (eval-exp (car bodies) new-env)
 							(loop (cdr bodies))))))]
 		[app-exp (rator rands) 
-			; (printf "\tMy rator is: ") (display rator) (newline)
-			; (printf "\t\tMy rands are: ") (display rands) (newline)
 			(let* ([proc-value 
-						(if (proc-val? rator)
+				(if (proc-val? rator)
 							; (begin (printf "I did NOT evaluate the rator.") (newline)
 							rator
 							; )
@@ -89,7 +93,7 @@
 							
 						)]
 					[args 
-						(if (and (list? rands) (andmap expression? rands))
+						(if (and (list? rands) (andmap (lambda (x) (expression? x)) rands))
 							(eval-rands rands env)
 							rands)]
 					; [replaced-proc-value 
@@ -98,8 +102,10 @@
 								)
 					
 					
-				; (printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
-				(apply-proc proc-value args env))]
+				;(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
+				(printf "I used to look like ") (display proc-value) (newline) (newline)
+				(apply-proc proc-value args env)
+				)]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ;Gets the last element in a list.
@@ -123,12 +129,7 @@
 
 (define apply-proc
 	(lambda (proc-value args env)
-		; (printf "apply-proc\t\t")
-		 ; (display proc-value)
-		  ; (printf "\n\t\t")
-		 ; (display args)
-		; (newline)
-		; (newline)
+		
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc (la) (apply-lambda la args env)]
@@ -143,14 +144,14 @@
 	(lambda (exp args env)
 		;(printf "apply-lambda\t\t")
 		; (display exp)
-		;(printf "I am now in apply-lambda, looking at ") (display (cadr exp)) (newline)	
+		(printf "I am now in apply-lambda, looking at ") (display (cadr exp)) (newline)	
 		(eval-exp exp
 			(if (or (symbol? (cadr exp)) (not (list? (cadr exp))))
 					(with-lists (cadr exp) args env)
-					;(begin (printf "I am now passing in the values of ") (display (cadr exp)) (printf " with the args of ") (display args) (newline)
+					(begin (printf "I am now passing in the values of ") (display (cadr exp)) (printf " with the args of ") (display args) (newline)
 					(extend-env 
 						(cadr exp)
-						args env)))))
+						args env))))))
 						
 (define with-lists 
 	(lambda (vars args env)
