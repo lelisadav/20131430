@@ -45,7 +45,7 @@
 								(let ([envir (strike-from-env 
 												(cadr (cadr x))
 												env)])
-									(eval-exp (cadr x) envir))
+									(lambda-proc-with-env x envir))
 								(eval-exp x env)))
 							exp) env)])
 					(let loop ([bodies bodies])
