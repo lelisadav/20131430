@@ -60,6 +60,7 @@
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[lambda-exp (params body)
+			;(begin (display params) (newline) (display body) (newline) (display env) (newline) (newline)
 			(last (map (lambda (x) 
 				(if (expression? x)
 					(eval-exp x env)
@@ -78,9 +79,10 @@
 						(if (and (list? rands) (andmap expression? rands))
 							(eval-rands rands env)
 							rands)])
+				(begin (display rator) (newline) (display args) (newline) (newline)
 				(if (proc-val? proc-value)
 					(apply-proc proc-value args env)
-					(apply-proc (eval-exp proc-value env) args env)))]
+					(apply-proc (eval-exp proc-value env) args env))))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ;Gets the last element in a list.
@@ -116,7 +118,7 @@
 	(lambda (exp args env)
 		;(printf "apply-lambda\t\t")
 		; (display exp)
-		; (newline)
+						
 		(eval-exp exp
 			(if (or (symbol? (cadr exp)) (not (list? (cadr exp))))
 					(with-lists (cadr exp) args env)
