@@ -190,6 +190,9 @@
 								(car ca))
 								(map (lambda (y)
 									(car nex)) (car ca))))
+						; Error here with it not correctly going onto the next list of statements. Needs better if-exp-null
+						; integration! Something like doing a cond exp of all the cond expressions? Or a multi-bodied lambda would probably work better
+						; as long as it short-circuited. It will get the correct answer if it's odd! But nothing for anything else... XD
 						)])))
 				
 			
