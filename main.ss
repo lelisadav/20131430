@@ -8,15 +8,10 @@
 (define load-all ; make it easy to reload the files
   (lambda ()
     (load "datatypes.ss")
-	;(printf "datatypes.ss loaded properly.\n")
     (load "parse.ss")
-	;(printf "parse.ss loaded properly.\n")
 	(load "primitives.ss")
-	;(printf "primitives.ss loaded properly.\n")
 	(load "interpreter.ss")
-	;(printf "interpreter.ss loaded properly.\n")
     (load "env.ss")
-	;(printf "env.ss loaded properly.\n")
 	(load "A15-test-code.ss")
 	
 	

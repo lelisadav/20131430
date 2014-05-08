@@ -4,12 +4,10 @@
 ;Sees if the item is a literal.
 (define lit?
 	(lambda (x)
-	;	(printf "lit?\n")
 		(cond
 		[(quoted? x)  #t]
 		[(list? x) #f]
 		[(pair? x) (quoted? x)] 
-		;[(symbol? x) #f]
 		[(number? x)  #t]
 		[(string? x) #t]
 		[(boolean? x)  #t]
@@ -22,29 +20,13 @@
 ;Sees if the item is quoted.
 (define quoted? 
   (lambda (exp)
-  ;	(printf "quoted?\n")
     (and (pair? exp) (eq? (car exp) 'quote))))		
 
 (define parse-exp
 	(lambda (datum . childoflist)
-		; (printf "Attempting to parse exp ") (display datum) (newline)
 		(cond
 			[(symbol? datum)
-				; (newline)
-				; (printf "\tsymbol? datum: ")
-				; (display datum)
-				; (printf "\tchildoflist: ")
-				; (display childoflist)
-				; (newline)
-				; (cond
-					; [(and (not (null? childoflist))(car childoflist) (test-prim? datum)) 
-					; (unevaluated-proc
-					; (proc-in-list-exp datum)
-					; ]
-					; [else (var-exp datum)]
-					; )
-				(var-exp datum)
-			]
+				(var-exp datum)]
 			[(lit? datum) (lit-exp datum)]
 			[(not (list? datum)) 
 				(eopl:error 'parse-exp
@@ -57,7 +39,7 @@
 								"Error in parse-exp: set! expression: ~s" datum))]
 					[(eqv? (car datum) 'lambda) 
 						(if (check-valid-arg? (cadr datum))
-							(lambda-proc (lambda-exp (cadr datum) (map parse-exp (cddr datum) )))
+							(lambda-exp (cadr datum) (map parse-exp (cddr datum)))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: lambda expression: ~s" datum))]
 					[(eqv? (car datum) 'let)
@@ -81,7 +63,7 @@
 										[vars (car splitls)]
 										[vals (cadr splitls)]
 										)
-									(let-exp vars (map parse-exp vals ) (map parse-exp body )))])]
+									(let-exp vars (map parse-exp vals) (map parse-exp body )))])]
 								[else 
 									(eopl:error 'parse-exp
 									"declarations in ~s-expression not a list ~s" 'let datum)])]
@@ -129,30 +111,6 @@
 									[vars (car splitls)]
 									[vals (cadr splitls)])
 									(letrec-exp vars (map parse-exp vals ) (map parse-exp body )))])]
-					; [(eqv? (car datum) 'let)
-						; (if (check-let? (cadr datum))
-							; (if (null? (cddr datum))
-								; (eopl:error 'parse-exp 
-									; "Error in parse-exp: let expression: incorrect arguments: ~s" datum)
-								; (let-exp (cadr datum) (map parse-exp (cddr datum))))
-							; (eopl:error 'parse-exp 
-								; "Error in parse-exp: let expression: ~s" datum))]
-					; [(eqv? (car datum) 'let*)
-						; (if (check-let? (cadr datum))
-							; (if (null? (cddr datum))
-								; (eopl:error 'parse-exp 
-									; "Error in parse-exp: let expression: incorrect arguments: ~s" datum)
-								; (let*-exp (cadr datum) (map parse-exp (cddr datum))))
-							; (eopl:error 'parse-exp 
-								; "Error in parse-exp: let* expression: ~s" datum))]
-					; [(eqv? (car datum) 'letrec)
-						; (if (check-let? (cadr datum))
-							; (if (null? (cddr datum))
-								; (eopl:error 'parse-exp 
-									; "Error in parse-exp: letrec expression: incorrect arguments: ~s" datum)
-								; (letrec-exp (cadr datum) (map parse-exp (cddr datum))))
-							; (eopl:error 'parse-exp 
-								; "Error in parse-exp: let expression: ~s" datum))]
 					[(eqv? (car datum) 'if)
 						(if (check-if? datum)
 							(if (null? (cdddr datum)) 
@@ -170,10 +128,8 @@
 
 (define unparse-exp ; an inverse for parse-exp
   (lambda (exp)
-  ;	(printf "unparse-exp\n")
     (cases expression exp
       (var-exp (id) id)
-	  ; (proc-in-list-exp (id) id)
       (lambda-exp (id body) 
         (append (list 'lambda id)
           (map unparse-exp body)))
@@ -213,7 +169,6 @@
 
 (define occurs-free? ; in parsed expression
   (lambda (var exp)
-  ;	(printf "occurs-free?\n")
     (cases expression exp
       (var-exp (id) (eqv? id var))
       (lambda-exp (id body)
@@ -225,7 +180,6 @@
 			
 (define check-let?
 	(lambda (datum)
-		;(printf "check-let?\n")
 		(cond [(null? datum) #t]
 			[(not (list? datum)) #f]
 			[(number? (car datum)) #f]
@@ -236,7 +190,6 @@
 		
 (define check-valid-arg?
 	(lambda (item)
-	;	(printf "check-valid-arg?\n")
 		(cond [(null? item) #t]
 			[(symbol? item) #t]
 			[(pair? item) #t]

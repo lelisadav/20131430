@@ -1,9 +1,5 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
-; (define empty-env
-	; (lambda ()
-		; (empty-env-record)))
-		
 (define strike-from-env
 	(lambda (var env)
 		(strike-from-e var env)))

@@ -7,7 +7,6 @@
 
 (define extend-env
 	(lambda (syms vals env)
-		;(printf "extend-env\n")
 		(extended-env-record syms vals env)))
 (define empty-env
 	(lambda ()	
@@ -21,19 +20,12 @@
 
 (define eval-exp
   (lambda (exp env)
-	;(printf "Beginning evaluation of: ") (display exp) (newline)
     (cases expression exp
 		[lit-exp (datum) 
-			;(printf "I went to lit for ") (display datum) (newline) (newline) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
-				datum)
-				
-				]
-		;[proc-in-list-exp (id)
-			; id]
+				datum)]
 		[var-exp (id)
-		;(printf "I went to var for ") (display id) (newline) (newline) 
 			(apply-env env id
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
@@ -42,82 +34,31 @@
 						;(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							;"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
-			;(printf "I am now in let for ") (display vars) (newline) (newline)
-			; (printf "I am now in let, evaluating ") (display vars) (newline) ;(printf ", which has the args of ") (display exp) (newline)
-			(let ([new-env 
-					(extend-env vars 
-						(map (lambda (x) 
-							(if (and (list? x) (proc-val? x))
-								(let ([envir (strike-from-env 
-												(cadr (cadr x))
-												env)])
-									(lambda-proc-with-env x envir))
-								(eval-exp x env)))
-							exp) env)])
-					(let loop ([bodies bodies])
-						(if (null? (cdr bodies))
-							(eval-exp (car bodies) new-env)
-							(begin (eval-exp (car bodies) new-env)
-								(loop (cdr bodies))))))]
+			(printf "I shouldn't be here, ever!")]
+		[lambda-exp (id body)
+			(lambda-proc-with-env id body env)]
 		[if-else-exp (test-exp then-exp else-exp)
-			;(printf "I am now in if, testing ") (display test-exp) (newline) (newline)
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env)
 				(eval-exp else-exp env))]
 		[if-exp-null (test-exp then-exp)
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
-		[lambda-exp (params body)
-			;(printf "I am now in lambda, evaluating ") (display params) (newline) (newline)
-			(last (map (lambda (x) 
-				(if (expression? x)
-					(eval-exp x env)
-					(lambda-proc-with-env x env)))
-				body))]
-		[multi-lambda-exp (param bodies)
-			(lambda params
-				(let loop ([bodies bodies])
-					(if (null? (cdr bodies))
-						(eval-exp (car bodies) new-env)
-						(begin (eval-exp (car bodies) new-env)
-							(loop (cdr bodies))))))]
 		[app-exp (rator rands) 
-			(let* ([proc-value 
-				(if (proc-val? rator)
-							; (begin (printf "I did NOT evaluate the rator.") (newline)
-							rator
-							; )
-							; (begin (printf "I needed to evaluate the rator! ") (newline)
-							(eval-exp rator env)
-							; )
-							
-						)]
-					[args 
-						(if (and (list? rands) (andmap (lambda (x) (expression? x)) rands))
-							(eval-rands rands env)
-							rands)]
-					; [replaced-proc-value 
-							; (map (lambda (x) (if (expression? x) (cases expression x
-								; (proc-in-list-exp (id) (prim-proc id)) (else x)) x)) proc-value)]
-								)
-					
-					
-				;(printf "My proc-value is: ") (display proc-value) (newline) (printf "My args are: ") (display args) (newline) (newline) (newline)
-				(apply-proc proc-value args env)
-				)]
+			(let* ([proc-value (eval-exp rator env)]
+					[args (eval-rands rands env)])
+				(apply-proc proc-value args))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
-	;(printf "last\n")
 		(cond [(null? (cdr ls)) (car ls)]
 			[else (last (cdr ls))])))
 		
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
   (lambda (rands env)
-  	;(printf "eval-rands\n")
     (map (lambda (x)
 	(eval-exp x env))
 		rands)))
@@ -125,36 +66,31 @@
 ;  Apply a procedure to its arguments.
 ;  At this point, we only have primitive procedures.  
 ;  User-defined procedures will be added later.
-
 (define apply-proc
-	(lambda (proc-value args env)
-		(display proc-value) (newline)
+	(lambda (proc-value args)
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
-			[lambda-proc (la) (apply-lambda la args env)]
-			[lambda-proc-with-env (la envi) (apply-lambda (cadr la) args envi)]
-			[proc-in-list-exp (bodys) (begin (display bodys) bodys)]
-			; You will add other cases
+			[lambda-proc-with-env (id body envi) (apply-lambda id body args envi)]
 			[else (error 'apply-proc
                 "Attempt to apply bad procedure: ~s" 
                 proc-value)])))
 				
+;Evaluates the lambda.
 (define apply-lambda
-	(lambda (exp args env)
-		;(printf "apply-lambda\t\t")
-		; (display exp)
-		(printf "I am now in apply-lambda, looking at ") (display (cadr exp)) (newline)	
-		(eval-exp exp
-			(if (or (symbol? (cadr exp)) (not (list? (cadr exp))))
-					(with-lists (cadr exp) args env)
-					(begin (printf "I am now passing in the values of ") (display (cadr exp)) (printf " with the args of ") (display args) (newline)
-					(extend-env 
-						(cadr exp)
-						args env))))))
+	(lambda (id body args env)
+		(let ([envi 
+			(if (or (symbol? id) (not (list? id)))
+				(with-lists id args env)
+				(extend-env 
+					id
+					args env))])
+		;change to loop
+		(last (map (lambda (x) 
+				(eval-exp x envi))
+				body)))))
 						
 (define with-lists 
 	(lambda (vars args env)
-		;(printf "with-lists\n")
 		(cond [(symbol? vars) 
 				(extend-env (list vars) 
 					(list args) env)]
@@ -165,19 +101,16 @@
 					
 (define get-nice-vars
 	(lambda (nls)
-		;(printf "get-nice-vars\n")
 		(cond [(not (pair? nls)) (cons nls '())]
 			[else (cons (car nls) (get-nice-vars (cdr nls)))])))
 			
 (define get-list-placement 
 	(lambda (vars count)
-		;(printf "get-list-placement\n")
 		(cond [(not (pair? vars)) count]
 			[else (get-list-placement (cdr vars) (+ 1 count))])))
 			
 (define find-correct-args
 	(lambda (args place count)
-		;(printf "find-correct-args\n")
 		(cond [(equal? count place) 
 				(list args)]
 			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
@@ -208,14 +141,38 @@
 
 (define eval-one-exp
 	(lambda (x) 
-		; (printf "\t")
-		; (display x)
-		; (newline)
-		; (newline)
-		
-	(top-level-eval (parse-exp x))))
+		(top-level-eval (syntax-expand (parse-exp x)))))
 
-
+(define syntax-expand
+	(lambda (datum)
+		(cases expression datum
+			[var-exp (id) (var-exp id)]
+			[lit-exp (id) (lit-exp id)]
+			[lambda-exp (id body) 
+				(lambda-exp id
+					(map syntax-expand body))]
+			[let-exp (vars vals body)
+				(app-exp (lambda-exp vars (map syntax-expand body)) (map syntax-expand vals))]
+			[let*-exp (vars vals body)
+				(if (null? vars)
+					(syntax-expand body)
+					(app-exp 
+						(lambda-exp (car vars) 
+							(syntax-expand 
+								(let*-exp (cdr vars) (cdr vals) body))) 
+						(car vals)))]
+			[letrec-exp (vars vals body)
+				(letrec-exp vars vals body)]
+			[app-exp (rator rands)
+				(app-exp (syntax-expand rator) (map syntax-expand rands))]
+			[set!-exp (id body)
+				(set!-exp id (syntax-expand body))]
+			[if-else-exp (test success fail)
+				(if-else-exp test 
+					(syntax-expand success) (syntax-expand fail))]
+			[if-exp-null (test success)
+				(if-exp-null test (syntax-expand success))])))
+			
 
 
 		

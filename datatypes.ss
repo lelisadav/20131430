@@ -1,6 +1,3 @@
-
-
-
 ;; Parsed expression datatypes
 
 ;Expression types.
@@ -8,19 +5,12 @@
 (define-datatype expression expression?  ; based on the simple expression grammar, EoPL-2 p6
 	(var-exp
 		(id symbol?))
-	(lambda-exp
-		(id check-lam?)
-		(body (list-of expression-o?)))
 	(set!-exp
-		(change expression?)
+		(change symbol?)
 		(to expression?))
-	(multi-lambda-exp
+	[lambda-exp
 		(id check-lam?)
-		(body (list-of expression?)))
-	; (namedlet-exp
-		; (name symbol?)
-		; (id (list-of? list?))
-		; (body (list-of? expression)))
+		(body (list-of expression-o?))]
 	(let-exp
 		(vars (list-of symbol?))
 		(vals (list-of expression-o?))
@@ -47,17 +37,16 @@
 		(item lit?)))
 
 	
-; datatype for procedures.  At first there is only one
-; kind of procedure, but more kinds will be added later.
+
 (define list-of? 
 	(lambda (pred) 
 		(lambda (ls)
-	; (printf "list-of?\n\n")
-	; (display ls)
-	(cond
-	[(not(list? ls)) (pred? ls)]
-	[else
-	(or(andmap pred ls) (pred ls))]))))
+			(cond
+				[(not(list? ls)) (pred? ls)]
+				[else
+					(or(andmap pred ls) (pred ls))]))))
+	
+;Checks if something is an expression or proc-val.
 (define expression-o?
 	(lambda (v)
 		(or (expression? v) (proc-val? v))))
@@ -65,10 +54,9 @@
 (define-datatype proc-val proc-val?
 	[prim-proc
 		(name test-prim?)]
-	[lambda-proc
-		(exp expression-o?)]
 	[lambda-proc-with-env
-		(exp proc-val?)
+		(id check-lam?)
+		(body (list-of expression-o?))
 		(env environment?)]
 	[proc-in-list-exp
 		(id (list-of expression-o?))]
