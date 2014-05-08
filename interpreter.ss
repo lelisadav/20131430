@@ -5,17 +5,6 @@
 ; cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
 ; cddadr cddar cdddar cddddr cdddr cddr cdr 
 
-(define extend-env
-	(lambda (syms vals env)
-		(extended-env-record syms vals env)))
-(define empty-env
-	(lambda ()	
-		(empty-env-record)))
-(define top-level-eval
-  (lambda (form)
-    ; later we may add things that are not expressions.
-    (eval-exp form init-env)))
-
 ; eval-exp is the main component of the interpreter
 
 (define eval-exp
@@ -115,20 +104,7 @@
 				(list args)]
 			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
 
-(define *prim-proc-names* 
-	'(+ - add1 sub1 cons = * / zero? not and or < > <= >= list null? assq eq? equal? atom? 
-	length list->vector list? pair? procedure? vector->list vector make-vector vector-ref 
-	vector? number? symbol? set-car! set-cdr! vector-set! display
-	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
-	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
-	cddadr cddar cdddar cddddr cdddr cddr cdr))
 
-(define init-env         ; for now, our initial global environment only contains 
-	(extend-env            ; procedure names.  Recall that an environment associates
-		*prim-proc-names*   ;  a value (not an expression) with an identifier.
-		(map prim-proc      
-			*prim-proc-names*)
-		(empty-env)))
 
 (define rep      ; "read-eval-print" loop.
   (lambda ()
