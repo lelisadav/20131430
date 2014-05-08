@@ -15,9 +15,6 @@
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
 				datum)]
-		
-		; [while-exp (test-cond bodys)
-			; (printf "This is a while expression")
 		[var-exp (id)
 			(apply-env env id
 				(lambda (x) x)
@@ -43,23 +40,9 @@
 			(let* ([proc-value (eval-exp rator env)]
 					[args (eval-rands rands env)])
 				(apply-proc proc-value args))]
-		[case-exp (exp body)
-			(let ([evaled (eval-exp exp env)])
-			(eval-case-exp evaled body env))]
+		[case-exp (var cases body)
+			(printf "I should never be here!")]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
-
-(define eval-case-exp 
-	(lambda (val bodies env)
-		(let ((exp (car bodies)))
-		(cases case-clause exp
-			[std-case-clause (keys body)
-				(if (element-of? val keys)
-					;if true: iterate through the body and evaluate them
-					;else:
-					(eval-case-exp val (cdr bodies) env))]
-			[else-case-clause (body)
-				;iterate through the body and evaluate them
-				]))))
 					
 ;Gets the last element in a list.
 (define last 
@@ -139,13 +122,6 @@
 
 (define eval-one-exp
 	(lambda (x) 
-		(newline)
-		(printf "\t\tEvaluating: ")
-		(display x)
-		(newline)
-		(printf "\tThe correct result is: ")
-		; (display (eval x))
-		(newline)
 		(top-level-eval (syntax-expand (parse-exp x)))))
 
 (define syntax-expand
@@ -194,31 +170,28 @@
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
 				(if-exp-null test (syntax-expand success))]
-				; (define-syntax while
-	; (syntax-rules ()
-		; [(_ test b1 b2 ...) 
-			; (letrec ([_*temp*_ (lambda () (if test (begin b1 b2 ... (_*temp*_))))])
-				; (_*temp*_))]))
-			
-				[while-exp (test body)
-					; (newline)
-					; (display body)
-					; (newline)
-					(let* (
-					[var '_*temp*_]
-					[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
-					[val (lambda-exp '() (list (if-exp-null test mainbody)))]
-					[exterior (app-exp (var-exp var) '())])
-				(letrec-exp (list var) (list val) (list exterior)))]
-				[or-exp (body) (or-exp (map syntax-expand body))]
-				[and-exp (body) (and-exp (map syntax-expand body))]
-				[case-exp (exp body) (case-exp exp (map syntax-expand body))]
+			[while-exp (test body)
+				(let* ([var '_*temp*_]
+						[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
+						[val (lambda-exp '() (list (if-exp-null test mainbody)))]
+						[exterior (app-exp (var-exp var) '())])
+					(letrec-exp (list var) (list val) (list exterior)))]
+			[or-exp (body) (or-exp (map syntax-expand body))]
+			[and-exp (body) (and-exp (map syntax-expand body))]
+			[case-exp (vars cases next)
+				(let loop ([ca cases]
+							[nex next])
+						(if (not (null? (cdr ca)))
+							(loop (cdr ca) (cdr nex)))
+						(syntax-expand (cond-exp 
+							(map (lambda (x) 
+								(app-exp (var-exp 'equal?)
+									(list x vars)))
+								(car ca))
+								(map (lambda (y)
+									(car nex)) (car ca))))
+						)])))
 				
-				
-				
-				
-				
-				)))
 			
 
 

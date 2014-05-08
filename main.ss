@@ -12,9 +12,6 @@
 	(load "primitives.ss")
 	(load "env.ss")
 	(load "interpreter.ss")
-    (load "A15-test-code.ss")
-	(r)
-	(load "A16-test-code.ss")
 	
 	
 	

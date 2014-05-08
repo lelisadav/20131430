@@ -129,7 +129,7 @@
 					[(eqv? (car datum) 'and)
 						(and-exp (map parse-exp (cdr datum)))]
 					[(eqv? (car datum) 'case)
-						(case-exp (parse-exp (cadr datum)) (map parse-case-clauses (cddr datum)))]
+						(case-exp (parse-exp (cadr datum)) (grab-cases (cddr datum)) (grab-case-nexts (cddr datum)))]
 					[else (app-exp
 						(parse-exp (car datum))
 						(map parse-exp (cdr datum) 
@@ -138,16 +138,20 @@
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
 
-(define parse-case-clauses
-	(lambda (clause)
-		(cond
-			[(eqv? (car clause) 'else)
-				(else-case-clause (map parse-exp (cdr clause)))]
-			[else
-				(let ([keys (car clause)])
-					(if (not (set? keys))
-						(eopl:error 'parse-exp "Duplicate key found in case ~s" keys)
-						(std-case-clause (keys) (map parse-exp (cdr clause)))))])))
+(define grab-case-nexts
+	(lambda (datum)
+		(cond [(null? datum) '()]
+			[(equal? (car datum) 'else)
+				(cons (parse-exp (cadr (car datum))) '())]
+			[else 
+				(cons (parse-exp (cadr (car datum))) (grab-case-nexts (cdr datum)))])))
+				
+(define grab-cases
+	(lambda (datum)
+		(if (or (null? datum) (eqv? (caar datum) 'else))
+			'()
+			(cons (map parse-exp (caar datum)) (grab-cases (cdr datum))))))
+				
 ;Grabs the test cases from a cond expression.
 (define grab-cond-tests
 	(lambda (datum)

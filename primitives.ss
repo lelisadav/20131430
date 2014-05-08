@@ -92,14 +92,9 @@
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
 			[(map) 
-			(newline)
-			(display args)
-			(newline)
-			(if (= 1 (length (cdr args)))
-				(map-def (car args) (cdr args))
-				(map-def (car args) (cadr args) (cddr args)))
-			
-			]
+				(if (= 1 (length (cdr args)))
+					(map-def (car args) (cdr args))
+					(map-def (car args) (cadr args) (cddr args)))]
 			[(apply) 
 				; (display 'apply)(display (cadr args))
 				(apply-def (car args) (cdr args))]

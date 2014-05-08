@@ -48,8 +48,9 @@
 	(and-exp
 		(body (list-of expression?)))
 	(case-exp
-		(expr expression?)
-		(clauses (list-of case-clause?)))
+		(var expression?)
+		(cases (list-of (list-of expression?)))
+		(nexts (list-of expression-o?)))
 		
 		)
 
@@ -88,6 +89,7 @@
 		(exp (list-of expression?))]
 	[else-case-clause
 		(exp (list-of expression?))])
+		
 (define-datatype proc-val proc-val?
 	[prim-proc
 		(name test-prim?)]
@@ -95,8 +97,6 @@
 		(id check-lam?)
 		(body (list-of expression-o?))
 		(env environment?)]
-	[proc-in-list-exp
-		(id (list-of expression-o?))]
 	
 	)
 

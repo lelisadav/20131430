@@ -175,11 +175,9 @@
 (define display-results
   (lambda (correct results test-procedure?)
      (display ": ")
-	 (newline)
-	 (printf "************")
      (pretty-print 
       (if (andmap test-procedure? correct results)
-          'All-correct************
+          'All-correct
           `(correct: ,correct yours: ,results)))
 		 
 		  
