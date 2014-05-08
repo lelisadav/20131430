@@ -195,14 +195,17 @@
 					(helper  (cdr currvec) (+ 1 index))))])
 		(helper vec 0))))
 (define list-def
-	(lambda (args)
-		(letrec (
-			[helper 
-				(lambda (args)
-					(if (= 1 (length args))
-						(cons (car args) '())
-						(cons (car args) (helper (cdr args)))))])
-		(helper args))))
+	(lambda args
+		args))
+; (define list-def
+	; (lambda (args)
+		; (letrec (
+			; [helper 
+				; (lambda (args)
+					; (if (= 1 (length args))
+						; (cons (car args) '())
+						; (cons (car args) (helper (cdr args)))))])
+		; (helper args))))
 
 ;(trace apply-prim-proc zero?-def not-def)
 (define procedure?-def
