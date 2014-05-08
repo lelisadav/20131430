@@ -23,6 +23,11 @@
 		(vars (list-of symbol?))
 		(vals (list-of expression?))
 		(body (list-of expression?))]
+	[cond-exp 
+		(tests (list-of expression?))
+		(vals (list-of expression?))]
+	[begin-exp 
+		(items (list-of expression?))]
 	(if-else-exp 
 		(condition expression?)
 		(if-true expression?)

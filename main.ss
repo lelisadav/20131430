@@ -12,13 +12,14 @@
 	(load "primitives.ss")
 	(load "env.ss")
 	(load "interpreter.ss")
-    
-	(load "A15-test-code.ss")
-	
-	
-	
+    (load "A15-test-code.ss")
+	(r)
+	(load "A16-test-code.ss")
+	(r)
 	))
 
+
+	
 (load-all)
 
 (define l load-all) ; even easier!
