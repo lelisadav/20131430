@@ -175,10 +175,15 @@
 (define display-results
   (lambda (correct results test-procedure?)
      (display ": ")
+	 (newline)
+	 (printf "************")
      (pretty-print 
       (if (andmap test-procedure? correct results)
-          'All-correct
-          `(correct: ,correct yours: ,results)))))
+          'All-correct************
+          `(correct: ,correct yours: ,results)))
+		 
+		  
+		  ))
 
 
 (define sequal?-grading

@@ -122,6 +122,8 @@
 								(if-else-exp (parse-exp (cadr datum) ) (parse-exp (caddr datum) ) (parse-exp (cadddr datum) )))
 							(eopl:error 'parse-exp
 								"Error in parse-exp: if expression: ~s" datum))]
+					[(eqv? (car datum) 'while)
+						(while-exp (parse-exp (cadr datum)) (map parse-exp (cddr datum)))]
 					[else (app-exp
 						(parse-exp (car datum))
 						(map parse-exp (cdr datum) 
@@ -146,6 +148,9 @@
 
 (define unparse-exp ; an inverse for parse-exp
   (lambda (exp)
+	(newline)
+	(display exp)
+	(newline)
     (cases expression exp
       (var-exp (id) id)
       (lambda-exp (id body) 
@@ -166,6 +171,10 @@
 				(append (list 'let* merged) 
 					(map unparse-exp body)))
 		)
+		; (while-exp (test-cond body)
+			; (let ([uptest (unparse-exp test-cond)]
+				; [upbody (map unparse-exp body)])
+			; (append  (list 'while uptest upbody)))
 		(letrec-exp (vars vals body)
 			(let* ([unparsevals (map unparse-exp vals)]
 			[merged (map (lambda (x y) (list x y)) vars unparsevals)])

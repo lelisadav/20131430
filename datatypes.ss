@@ -39,7 +39,12 @@
 		(rator expression-o?)
 		(rand (list-of expression-o?)))
 	(lit-exp 
-		(item lit?)))
+		(item lit?))
+	(while-exp
+		(test-cond expression?)
+		(body (list-of expression?)))
+		
+		)
 
 	
 

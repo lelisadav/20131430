@@ -14,6 +14,9 @@
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum)
 				datum)]
+		
+		; [while-exp (test-cond bodys)
+			; (
 		[var-exp (id)
 			(apply-env env id
 				(lambda (x) x)
@@ -156,6 +159,7 @@
 					[else 
 						(if-else-exp (car tests) (syntax-expand (car vals))
 							(syntax-expand (cond-exp (cdr tests) (cdr vals))))])]
+			
 			[begin-exp (items)
 				(app-exp (lambda-exp '() 
 					(map syntax-expand items)) '())]
@@ -167,7 +171,25 @@
 				(if-else-exp test 
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
-				(if-exp-null test (syntax-expand success))])))
+				(if-exp-null test (syntax-expand success))]
+				; (define-syntax while
+	; (syntax-rules ()
+		; [(_ test b1 b2 ...) 
+			; (letrec ([_*temp*_ (lambda () (if test (begin b1 b2 ... (_*temp*_))))])
+				; (_*temp*_))]))
+			
+				[while-exp (test body)
+					(let* (
+					[var '_*temp*_]
+					[mainbody (begin-exp (append body (list (app-exp (var-exp var) '()))))]
+					[val (lambda-exp '() (if-exp-null test mainbody))]
+					[exterior (app-exp (var-exp '_*temp*_))])
+				(letrec-exp var val exterior)] 
+				
+				
+				
+				
+				)))
 			
 
 

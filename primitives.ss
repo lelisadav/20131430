@@ -91,7 +91,15 @@
 			[(cdddr) (cdr (cdr (cdr (car args))))]
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
-			[(map) (map-def (car args))]
+			[(map) 
+			(newline)
+			(display args)
+			(newline)
+			(if (= 1 (length (cdr args)))
+				(map-def (car args) (cdr args))
+				(map-def (car args) (cadr args) (cddr args)))
+			
+			]
 			[(apply) 
 				; (display 'apply)(display (cadr args))
 				(apply-def (car args) (cdr args))]
@@ -232,13 +240,13 @@
         (let map1 ([ls ls])
           (if (null? ls)
               '()
-              (cons (f (car ls))
+               (cons (apply-proc f (car ls))
                     (map1 (cdr ls)))))
         (let map-more ([ls ls] [more more])
           (if (null? ls)
               '()
               (cons
-                (apply f (car ls) (map-def car more))
+                (apply-proc f (car ls) (map-def car more))
                 (map-more (cdr ls) (map-def cdr more))))))))
 (define apply-def
 	(lambda (f . args)
