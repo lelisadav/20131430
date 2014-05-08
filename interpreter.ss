@@ -144,6 +144,19 @@
 						(car vals)))]
 			[letrec-exp (vars vals body)
 				(letrec-exp vars vals body)]
+			[cond-exp (tests vals)
+				(cond [(and (null? tests) (not (null? vals)))
+						(if-exp-null (parse-exp '(lambda () #t)) (syntax-expand (car vals)))]
+					[(and (null? (cdr tests)) (not (null? (cdr vals))))
+						(if-else-exp (car tests) (syntax-expand (car vals)) (syntax-expand (cadr vals)))]
+					[(and (null? (cdr tests)) (null? (cdr vals)))
+						(if-exp-null (car tests) (syntax-expand (car vals)))]
+					[else 
+						(if-else-exp (car tests) (syntax-expand (car vals))
+							(syntax-expand (cond-exp (cdr tests) (cdr vals))))])]
+			[begin-exp (items)
+				(app-exp (lambda-exp '() 
+					(map syntax-expand items)) '())]
 			[app-exp (rator rands)
 				(app-exp (syntax-expand rator) (map syntax-expand rands))]
 			[set!-exp (id body)

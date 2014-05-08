@@ -111,6 +111,10 @@
 									[vars (car splitls)]
 									[vals (cadr splitls)])
 									(letrec-exp vars (map parse-exp vals ) (map parse-exp body )))])]
+					[(eqv? (car datum) 'cond)
+						(cond-exp (grab-cond-tests (cdr datum)) (grab-cond-vals (cdr datum)))]
+					[(eqv? (car datum) 'begin)
+						(begin-exp (map parse-exp (cdr datum)))]
 					[(eqv? (car datum) 'if)
 						(if (check-if? datum)
 							(if (null? (cdddr datum)) 
@@ -125,6 +129,20 @@
 						))])]
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
+				
+;Grabs the test cases from a cond expression.
+(define grab-cond-tests
+	(lambda (datum)
+		(if (or (null? datum) (eqv? (caar datum) 'else))
+			'()
+			(cons (parse-exp (caar datum)) (grab-cond-tests (cdr datum))))))
+
+;Takes the 
+(define grab-cond-vals
+	(lambda (datum)
+		(cond [(null? datum) '()]
+			[(eqv? (caar datum) 'else) (cons (parse-exp (cadr (car datum))) '())]
+			[else (cons (parse-exp (cadr (car datum))) (grab-cond-vals (cdr datum)))])))
 
 (define unparse-exp ; an inverse for parse-exp
   (lambda (exp)
