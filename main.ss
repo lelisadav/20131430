@@ -13,7 +13,6 @@
 	(load "env.ss")
 	(load "interpreter.ss")
     
-	(load "A15-test-code.ss")
 	
 	
 	

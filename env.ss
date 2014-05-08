@@ -48,7 +48,7 @@
 	vector? number? symbol? set-car! set-cdr! vector-set! display
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
-	cddadr cddar cdddar cddddr cdddr cddr cdr))
+	cddadr cddar cdddar cddddr cdddr cddr cdr map apply))
 
 (define init-env         ; for now, our initial global environment only contains 
 	(extend-env            ; procedure names.  Recall that an environment associates

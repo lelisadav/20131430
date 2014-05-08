@@ -332,6 +332,8 @@
 ; apply-prim-proc apply-switch apply-all apply-all-num zero?-def not-def and-def or-def null?-def assq-def
 ; atom?-def length-def list->vector-def list?-def vector->list-def vector-ref-def list-def)
 ;(trace apply-lambda extend-env)
+	(load "main.ss")
+	(l)
   (display 'literals) 
   (test-literals)
   (display 'quote) 

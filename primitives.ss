@@ -91,6 +91,8 @@
 			[(cdddr) (cdr (cdr (cdr (car args))))]
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
+			[(map) (map-def (car args))]
+			[(apply) (display 'apply)(display (cadr args))(apply-def (car args) (cdr args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -180,6 +182,8 @@
 	(lambda (args)
 		(letrec ([helper 
 			(lambda (n args vec)
+				; (display args)
+				; (newline)
 				(if (< n (vector-length vec))
 					(begin
 					(vector-set! vec n (car args))
@@ -188,12 +192,20 @@
 			(helper 0 args (make-vector (length args))))))
 (define vector-ref-def
 	(lambda (vec n)
-		(letrec ([helper
-			(lambda (currvec n)
-				(if (= index n)
-					(car currvec)
-					(helper  (cdr currvec) (+ 1 index))))])
-		(helper vec 0))))
+		(vector-ref vec n)))
+; (define vector-ref-def
+	; (lambda (vec n)
+		; (letrec ([helper
+			; (lambda (currvec index)
+				; (display index)
+				; (printf "\t")
+				; (display currvec)
+				; (newline)
+				
+				; (if (= index n)
+					; ( currvec)
+					; (helper  (cdr currvec) (+ 1 index))))])
+		; (helper vec 0))))
 ; (define list-def
 	; (lambda args
 		; args))
@@ -212,3 +224,23 @@
 	(lambda (args)
 		(proc-val? args)
 		))
+(define map-def
+  (lambda (f ls . more)
+    (if (null? more)
+        (let map1 ([ls ls])
+          (if (null? ls)
+              '()
+              (cons (f (car ls))
+                    (map1 (cdr ls)))))
+        (let map-more ([ls ls] [more more])
+          (if (null? ls)
+              '()
+              (cons
+                (apply f (car ls) (map-def car more))
+                (map-more (cdr ls) (map-def cdr more))))))))
+(define apply-def
+	(lambda (f . args)
+		; (display args)
+		(if (proc-val? f)
+			(begin (printf "proc-val\n")(apply-proc f args))
+			(begin (printf "not proc-val\n")(apply f (cdr args))))))
