@@ -92,7 +92,9 @@
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
 			[(map) (map-def (car args))]
-			[(apply) (display 'apply)(display (cadr args))(apply-def (car args) (cdr args))]
+			[(apply) 
+				; (display 'apply)(display (cadr args))
+				(apply-def (car args) (cdr args))]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -241,6 +243,8 @@
 (define apply-def
 	(lambda (f . args)
 		; (display args)
-		(if (proc-val? f)
-			(begin (printf "proc-val\n")(apply-proc f args))
-			(begin (printf "not proc-val\n")(apply f (cdr args))))))
+		(apply-proc f args)
+		; (if (proc-val? f)
+			; (begin (printf "proc-val\n")(apply-proc f args))
+			; (begin (printf "not proc-val\n")(apply f (cdr args))))
+			))

@@ -118,9 +118,11 @@
 (define eval-one-exp
 	(lambda (x) 
 		(newline)
-		(display 'eval-one-exp)
-		(printf " ")
+		(printf "\t\tEvaluating: ")
 		(display x)
+		(newline)
+		(printf "\tThe correct result is: ")
+		(display (eval x))
 		(newline)
 		(top-level-eval (syntax-expand (parse-exp x)))))
 
