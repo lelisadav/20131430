@@ -43,6 +43,13 @@
 	(while-exp
 		(test-cond expression?)
 		(body (list-of expression?)))
+	(or-exp
+		(body (list-of expression?)))
+	(and-exp
+		(body (list-of expression?)))
+	(case-exp
+		(expr expression?)
+		(clauses (list-of case-clause?)))
 		
 		)
 
@@ -60,7 +67,27 @@
 (define expression-o?
 	(lambda (v)
 		(or (expression? v) (proc-val? v))))
+(define element-of?
+			(lambda (x ls)
+				(cond
+				((null? ls)  #f)
+				((equal? x (car ls))  #t)
+				(else (element-of? x (cdr ls))))))
+(define set?
+	(lambda (ls)
+		(cond 
+		((null? ls) #t)
+		((not (list? ls)) #f)
+		((not (element-of? (car ls) (cdr ls))) (set? (cdr ls)))
+		(else #f))))
 
+
+(define-datatype case-clause case-clause?
+	[std-case-clause
+		(keys set?)
+		(exp (list-of expression?))]
+	[else-case-clause
+		(exp (list-of expression?))])
 (define-datatype proc-val proc-val?
 	[prim-proc
 		(name test-prim?)]
@@ -70,39 +97,16 @@
 		(env environment?)]
 	[proc-in-list-exp
 		(id (list-of expression-o?))]
-	; [unevaluated-proc
-		; (bodys (list-of proc-val?))
-		; ]
+	
 	)
 
-; (define proc-in-list?
-	; (lambda (x)
-		; (cases expression x
-			; (proc-in-list-exp (id) #t)
-			; (var-exp (id) #f)
-			; (lambda-exp (id body) #f)
-			; (set!-exp (change to) #f)
-			; (multi-lambda-exp (id body) #f)
-			; (let-exp (vars vals body) #f)
-			; (let*-exp (vars vals body) #f)
-			; (letrec-exp (vars vals body) #f)
-			; (if-else-exp (con true false) #f)
-			; (if-exp-null (con true) #f)
-			; (app-exp (rator rand) #f)
-			; (lit-exp (item) #f)
-			; )))
+
 (define test-prim?
 	(lambda (x)
 		(prim-proc? (list x))))
 	 
 (define prim-proc?
 	(lambda (sym)
-		; (newline)
-		; (newline)
-		; (printf "\t\tprim-proc?:\t")
-		; (display sym)
-		; (newline)
-		; (newline)
 		(let loop ([sym sym]
 				[prim-procs *prim-proc-names*])
 			(cond [(null? prim-procs) #f]

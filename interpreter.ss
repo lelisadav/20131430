@@ -9,6 +9,7 @@
 
 (define eval-exp
   (lambda (exp env)
+	
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
@@ -16,7 +17,7 @@
 				datum)]
 		
 		; [while-exp (test-cond bodys)
-			; (
+			; (printf "This is a while expression")
 		[var-exp (id)
 			(apply-env env id
 				(lambda (x) x)
@@ -27,6 +28,8 @@
 							;"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
+		[letrec-exp (vars vals body)
+			(printf "Letrec-expression\n")]
 		[lambda-exp (id body)
 			(lambda-proc-with-env id body env)]
 		[if-else-exp (test-exp then-exp else-exp)
@@ -40,8 +43,24 @@
 			(let* ([proc-value (eval-exp rator env)]
 					[args (eval-rands rands env)])
 				(apply-proc proc-value args))]
+		[case-exp (exp body)
+			(let ([evaled (eval-exp exp env)])
+			(eval-case-exp evaled body env))]
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
+(define eval-case-exp 
+	(lambda (val bodies env)
+		(let ((exp (car bodies)))
+		(cases case-clause exp
+			[std-case-clause (keys body)
+				(if (element-of? val keys)
+					;if true: iterate through the body and evaluate them
+					;else:
+					(eval-case-exp val (cdr bodies) env))]
+			[else-case-clause (body)
+				;iterate through the body and evaluate them
+				]))))
+					
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
@@ -125,12 +144,15 @@
 		(display x)
 		(newline)
 		(printf "\tThe correct result is: ")
-		(display (eval x))
+		; (display (eval x))
 		(newline)
 		(top-level-eval (syntax-expand (parse-exp x)))))
 
 (define syntax-expand
 	(lambda (datum)
+		; (newline)
+		; (display datum)
+		; (newline)
 		(cases expression datum
 			[var-exp (id) (var-exp id)]
 			[lit-exp (id) (lit-exp id)]
@@ -179,12 +201,19 @@
 				; (_*temp*_))]))
 			
 				[while-exp (test body)
+					; (newline)
+					; (display body)
+					; (newline)
 					(let* (
 					[var '_*temp*_]
-					[mainbody (begin-exp (append body (list (app-exp (var-exp var) '()))))]
+					[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
 					[val (lambda-exp '() (list (if-exp-null test mainbody)))]
 					[exterior (app-exp (var-exp var) '())])
-				(letrec-exp (list var) (list val) (list exterior)))] 
+				(letrec-exp (list var) (list val) (list exterior)))]
+				[or-exp (body) (or-exp (map syntax-expand body))]
+				[and-exp (body) (and-exp (map syntax-expand body))]
+				[case-exp (exp body) (case-exp exp (map syntax-expand body))]
+				
 				
 				
 				

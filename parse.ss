@@ -124,6 +124,12 @@
 								"Error in parse-exp: if expression: ~s" datum))]
 					[(eqv? (car datum) 'while)
 						(while-exp (parse-exp (cadr datum)) (map parse-exp (cddr datum)))]
+					[(eqv? (car datum) 'or)
+						(or-exp (map parse-exp (cdr datum)))]
+					[(eqv? (car datum) 'and)
+						(and-exp (map parse-exp (cdr datum)))]
+					[(eqv? (car datum) 'case)
+						(case-exp (parse-exp (cadr datum)) (map parse-case-clauses (cddr datum)))]
 					[else (app-exp
 						(parse-exp (car datum))
 						(map parse-exp (cdr datum) 
@@ -131,7 +137,17 @@
 						))])]
 			[else (eopl:error 'parse-exp
 				"Invalid concrete syntax ~s" datum)])))
-				
+
+(define parse-case-clauses
+	(lambda (clause)
+		(cond
+			[(eqv? (car clause) 'else)
+				(else-case-clause (map parse-exp (cdr clause)))]
+			[else
+				(let ([keys (car clause)])
+					(if (not (set? keys))
+						(eopl:error 'parse-exp "Duplicate key found in case ~s" keys)
+						(std-case-clause (keys) (map parse-exp (cdr clause)))))])))
 ;Grabs the test cases from a cond expression.
 (define grab-cond-tests
 	(lambda (datum)
