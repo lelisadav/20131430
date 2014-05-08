@@ -182,9 +182,9 @@
 					(let* (
 					[var '_*temp*_]
 					[mainbody (begin-exp (append body (list (app-exp (var-exp var) '()))))]
-					[val (lambda-exp '() (if-exp-null test mainbody))]
-					[exterior (app-exp (var-exp '_*temp*_))])
-				(letrec-exp var val exterior)] 
+					[val (lambda-exp '() (list (if-exp-null test mainbody)))]
+					[exterior (app-exp (var-exp var) '())])
+				(letrec-exp (list var) (list val) (list exterior)))] 
 				
 				
 				
