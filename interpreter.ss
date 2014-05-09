@@ -149,11 +149,11 @@
 				(cond [(and (null? tests) (not (null? vals)))
 						(if-exp-null (parse-exp '(lambda () #t)) (syntax-expand (car vals)))]
 					[(and (null? (cdr tests)) (not (null? (cdr vals))))
-						(if-else-exp (car tests) (syntax-expand (car vals)) (syntax-expand (cadr vals)))]
+						(if-else-exp (syntax-expand (car tests)) (syntax-expand (car vals)) (syntax-expand (cadr vals)))]
 					[(and (null? (cdr tests)) (null? (cdr vals)))
-						(if-exp-null (car tests) (syntax-expand (car vals)))]
+						(if-exp-null (syntax-expand (car tests)) (syntax-expand (car vals)))]
 					[else 
-						(if-else-exp (car tests) (syntax-expand (car vals))
+						(if-else-exp (syntax-expand (car tests)) (syntax-expand (car vals))
 							(syntax-expand (cond-exp (cdr tests) (cdr vals))))])]
 			
 			[begin-exp (items)

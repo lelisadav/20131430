@@ -14,8 +14,6 @@
 
 (define apply-prim-proc
 	(lambda (prim-proc args)
-		(display prim-proc)
-		(newline)
 		(case prim-proc
 		    [(+) (apply-all + args 0)]
 		    [(-) (apply-switch - + args 0)]
@@ -217,7 +215,6 @@
 		; args))
 (define list-def
 	(lambda (args)
-	(display args)
 	args
 		; (letrec (
 			; [helper 
