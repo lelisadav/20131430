@@ -174,8 +174,6 @@
 						[val (lambda-exp '() (list (if-exp-null test mainbody)))]
 						[exterior (app-exp (var-exp var) '())])
 					(letrec-exp (list var) (list val) (list exterior)))]
-					
-			;; THIS IS WRONG. NO.
 			[or-exp (body) 
 				(if (null? body)
 					(lit-exp '#f)
