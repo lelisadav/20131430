@@ -145,6 +145,8 @@
 						(car vals)))]
 			[letrec-exp (vars vals body)
 				(letrec-exp vars vals body)]
+			[define-exp (name body)
+				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)
 				(cond [(and (null? tests) (not (null? vals)))
 						(if-exp-null (parse-exp '(lambda () #t)) (syntax-expand (car vals)))]
@@ -168,12 +170,17 @@
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
 				(if-exp-null test (syntax-expand success))]
+			;I don't think this while loop works, because letrec is not implemented and should not be implemented. 
 			[while-exp (test body)
-				(let* ([var '_*temp*_]
-						[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
-						[val (lambda-exp '() (list (if-exp-null test mainbody)))]
-						[exterior (app-exp (var-exp var) '())])
-					(letrec-exp (list var) (list val) (list exterior)))]
+				;(let* ([var '_*temp*_]
+				;		[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
+				;		[val (lambda-exp '() (list (if-exp-null test mainbody)))]
+				;		[exterior (app-exp (var-exp var) '())])
+				;	(letrec-exp (list var) (list val) (list exterior)))]
+				(syntax-expand (define-exp 'while (app-exp (lambda-exp (list 'while-v) (list (var-exp 'while-v))) 
+					(list (if-else-exp test
+						(begin-exp (list (car body) (var-exp 'while-v)))
+						(lit-exp '#f))))))]
 			[or-exp (body) 
 				(if (null? body)
 					(lit-exp '#f)

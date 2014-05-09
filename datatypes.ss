@@ -6,7 +6,7 @@
 	(var-exp
 		(id symbol?))
 	(set!-exp
-		(change symbol?)
+		(change expression?)
 		(to expression?))
 	[lambda-exp
 		(id check-lam?)
@@ -26,6 +26,9 @@
 	[cond-exp 
 		(tests (list-of expression?))
 		(vals (list-of expression?))]
+	[define-exp
+		(name symbol?)
+		(body expression?)]
 	[begin-exp 
 		(items (list-of expression?))]
 	(if-else-exp 
