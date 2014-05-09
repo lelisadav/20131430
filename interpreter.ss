@@ -19,9 +19,9 @@
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda (x) x))))]
-						;(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
-							;"variable not found in environment: ~s" id) (newline) (display env))))))]
+					(lambda (x) x)
+						(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
 		[letrec-exp (vars vals body)

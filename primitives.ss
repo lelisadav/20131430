@@ -216,7 +216,9 @@
 		; args))
 (define list-def
 	(lambda (args)
-	args
+		(if (null? args)
+			'()
+			(cons (car args) (list-def (cdr args))))
 		; (letrec (
 			; [helper 
 				; (lambda (args)
@@ -245,35 +247,14 @@
 	              (cons
 	                (apply-proc f (car ls) (map-def car more))
 	                (map-more (cdr ls) (map-def cdr more))))))))
-	(define apply-def
-		(lambda (f . args)
-			; (display args)
-			; (if (proc-val? f)
-				; (begin (printf "proc-val\n")
-				(apply-proc f args)
-				; (begin (printf "not proc-val\n")(apply f (cdr args)))
-				))
+(define apply-def
+	(lambda (proc args)
+		(apply-proc proc (car args))))
 				
+(define map-def
+	(lambda (proc body)
+		(let loop ([item (car body)])
+			(if (null? item)
+				'()
+				(cons (apply-proc proc (list (car item))) (loop (cdr item)))))))
 
-; (define map-def
-  ; (lambda (f ls . more)
-    ; (if (null? more)
-        ; (let map1 ([ls ls])
-          ; (if (null? ls)
-              ; '()
-               ; (cons (apply-proc f (car ls))
-                    ; (map1 (cdr ls)))))
-        ; (let map-more ([ls ls] [more more])
-          ; (if (null? ls)
-              ; '()
-              ; (cons
-                ; (apply-proc f (car ls) (map-def car more))
-                ; (map-more (cdr ls) (map-def cdr more))))))))
-; (define apply-def
-	; (lambda (f . args)
-		; (display args)
-		; (apply-proc f args)
-		; (if (proc-val? f)
-			; (begin (printf "proc-val\n")(apply-proc f args))
-			; (begin (printf "not proc-val\n")(apply f (cdr args))))
-			; ))
