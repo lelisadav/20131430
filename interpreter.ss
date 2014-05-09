@@ -186,7 +186,7 @@
 					(lit-exp '#t)
 					(app-exp (lambda-exp (list 'v)
 						(list (if-else-exp (var-exp 'v)
-							(syntax-expand (or-exp (cdr body)))
+							(syntax-expand (and-exp (cdr body)))
 							(var-exp 'v)))) (list (car body))))]
 			[case-exp (var cases next)
 				(syntax-expand (cond-exp (map (lambda (x) (change-to-or var x)) cases) (map syntax-expand next)))]
