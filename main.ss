@@ -9,10 +9,9 @@
   (lambda ()
     (load "datatypes.ss")
     (load "parse.ss")
-	(load "primitives.ss")
 	(load "env.ss")
 	(load "interpreter.ss")
-	
+	(load "primitives.ss")
 	
 	
 	))
