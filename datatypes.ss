@@ -57,7 +57,12 @@
 		
 		)
 
-	
+(define-datatype environment environment?
+	(empty-env-record)
+	(extended-env-record
+		(syms list?)
+		(vals (list-of scheme-value?))
+		(env environment?)))
 
 (define list-of? 
 	(lambda (pred) 
@@ -126,9 +131,3 @@
 (define scheme-value?
   (lambda (x) #t))
 
-(define-datatype environment environment?
-	(empty-env-record)
-	(extended-env-record
-		(syms list?)
-		(vals (list-of scheme-value?))
-		(env environment?)))
