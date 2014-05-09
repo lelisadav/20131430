@@ -41,13 +41,27 @@
 				(apply-proc proc-value args))]
 		[case-exp (var cases body)
 			(printf "I should never be here!")]
+		[while-exp (test body)
+			(if (eval-exp test env)
+				(begin (loop-through body env)
+					(eval-exp exp env)))]
+				
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
+		
+
 					
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
 		(cond [(null? (cdr ls)) (car ls)]
 			[else (last (cdr ls))])))
+			
+(define loop-through
+	(lambda (ls env)
+		(if (null? (cdr ls)) 
+			(eval-exp (car ls) env)
+			(begin (eval-exp (car ls) env)
+				(loop-through (cdr ls) env)))))
 		
 ; evaluate the list of operands, putting results into a list
 (define eval-rands
@@ -77,9 +91,7 @@
 				(extend-env 
 					id
 					args env))])
-			(last (map (lambda (x) 
-				(eval-exp x envi))
-				body)))))
+			(loop-through body envi))))
 						
 (define with-lists 
 	(lambda (vars args env)
@@ -170,17 +182,8 @@
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
 				(if-exp-null test (syntax-expand success))]
-			;I don't think this while loop works, because letrec is not implemented and should not be implemented. 
 			[while-exp (test body)
-				;(let* ([var '_*temp*_]
-				;		[mainbody (begin-exp (append (map syntax-expand body) (list (app-exp (var-exp var) '()))))]
-				;		[val (lambda-exp '() (list (if-exp-null test mainbody)))]
-				;		[exterior (app-exp (var-exp var) '())])
-				;	(letrec-exp (list var) (list val) (list exterior)))]
-				(syntax-expand (define-exp 'while (app-exp (lambda-exp (list 'while-v) (list (var-exp 'while-v))) 
-					(list (if-else-exp test
-						(begin-exp (list (car body) (var-exp 'while-v)))
-						(lit-exp '#f))))))]
+				(while-exp (syntax-expand test) (map syntax-expand body))]
 			[or-exp (body) 
 				(if (null? body)
 					(lit-exp '#f)

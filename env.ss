@@ -44,7 +44,7 @@
     (eval-exp form init-env)))
 			
 (define *prim-proc-names* 
-	'(+ - add1 sub1 cons = * / zero? not and or < > <= >= list null? assq eq? equal? atom? 
+	'(+ - add1 sub1 cons = * quotient / zero? not and or < > <= >= list null? assq eq? equal? atom? 
 	length list->vector list? pair? procedure? vector->list vector make-vector vector-ref 
 	vector? number? symbol? set-car! set-cdr! vector-set! display
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 

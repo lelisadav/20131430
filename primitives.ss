@@ -22,6 +22,7 @@
 		    [(cons) (cons (car args) (cadr args))]
 		    [(=) (apply-all-num = args)]
 			[(*) (apply-all * args 1)]
+			[(quotient) (apply-all quotient args 1)]
 			[(/) (apply-all / args 1)]
 			
 			;; All Prims break after this point, after extensive testing. 
@@ -56,11 +57,9 @@
 			[(vector?) (vector? (car args))]
 			[(number?) (number? (car args))]
 			[(symbol?) (symbol? (car args))]
-			;This is wrong.
-			;[(set-car!) (
-			;This is wrong.
-			;[(set-cdr!) (set-cdr! (car args) (cadr args))]
-			;[(vector-set!) (vector-set! (car args) (cadr args) (caddr args))]
+			[(set-car!) (set-car! (car args) (cadr args))]
+			[(set-cdr!) (set-cdr! (car args) (cadr args))]
+			[(vector-set!) (vector-set! (car args) (cadr args) (caddr args))]
 			[(display) (display (car args))]
 			[(newline) (newline)]
 			[(caaaar) (car (car (car (car (car args)))))]
