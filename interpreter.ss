@@ -9,7 +9,6 @@
 
 (define eval-exp
   (lambda (exp env)
-	
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
@@ -62,9 +61,6 @@
 ;  User-defined procedures will be added later.
 (define apply-proc
 	(lambda (proc-value args)
-		; (printf "k: ")
-		; (display proc-value)
-		; (newline)
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc-with-env (id body envi) (apply-lambda id body args envi)]
@@ -81,8 +77,7 @@
 				(extend-env 
 					id
 					args env))])
-		;change to loop
-		(last (map (lambda (x) 
+			(last (map (lambda (x) 
 				(eval-exp x envi))
 				body)))))
 						
@@ -179,26 +174,34 @@
 						[val (lambda-exp '() (list (if-exp-null test mainbody)))]
 						[exterior (app-exp (var-exp var) '())])
 					(letrec-exp (list var) (list val) (list exterior)))]
-			[or-exp (body) (or-exp (map syntax-expand body))]
-			[and-exp (body) (and-exp (map syntax-expand body))]
-			[case-exp (vars cases next)
-				(let loop ([ca cases]
-							[nex next])
-						(if (not (null? (cdr ca)))
-							(loop (cdr ca) (cdr nex)))
-						(syntax-expand (cond-exp 
-							(map (lambda (x) 
-								(app-exp (var-exp 'equal?)
-									(list x vars)))
-								(car ca))
-								(map (lambda (y)
-									(car nex)) (car ca))))
+					
+			;; THIS IS WRONG. NO.
+			[or-exp (body) 
+				(if (null? body)
+					(lit-exp '#f)
+					(app-exp (lambda-exp (list 'v)
+						(list (if-else-exp (var-exp 'v)
+							(var-exp 'v)
+							(syntax-expand (or-exp (cdr body)))))) (list (car body))))]
+			[and-exp (body) 
+				(if (null? body)
+					(lit-exp '#t)
+					(app-exp (lambda-exp (list 'v)
+						(list (if-else-exp (var-exp 'v)
+							(syntax-expand (or-exp (cdr body)))
+							(var-exp 'v)))) (list (car body))))]
+			[case-exp (var cases next)
+				(syntax-expand (cond-exp (map (lambda (x) (change-to-or var x)) cases) (map syntax-expand next)))]
+									
+						
 						; Error here with it not correctly going onto the next list of statements. Needs better if-exp-null
 						; integration! Something like doing a cond exp of all the cond expressions? Or a multi-bodied lambda would probably work better
 						; as long as it short-circuited. It will get the correct answer if it's odd! But nothing for anything else... XD
-						)])))
-				
-			
+						)))
+(define change-to-or
+	(lambda (var ls)
+		(syntax-expand 
+			(or-exp (map (lambda (x) (app-exp (var-exp 'equal?) (list var x))) ls)))))
 
 
 		
