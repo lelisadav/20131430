@@ -62,6 +62,9 @@
 ;  User-defined procedures will be added later.
 (define apply-proc
 	(lambda (proc-value args)
+		; (printf "k: ")
+		; (display proc-value)
+		; (newline)
 		(cases proc-val proc-value
 			[prim-proc (op) (apply-prim-proc op args)]
 			[lambda-proc-with-env (id body envi) (apply-lambda id body args envi)]
