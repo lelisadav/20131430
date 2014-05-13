@@ -21,6 +21,7 @@
 		(body (list-of expression?))]
 	[letrec-exp 
 		(vars (list-of symbol?))
+		(idss (list-of (list-of symbol?)))
 		(vals (list-of expression?))
 		(body (list-of expression?))]
 	[cond-exp 

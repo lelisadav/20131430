@@ -104,6 +104,22 @@
 	     (if (number? list-index-r)
 		 (+ 1 list-index-r)
 		 #f))))))
+		 
+(define extend-env-recursively 
+	(lambda (vars idss vals old-env)
+		(let ([len (length vars)])
+			(let ([vec (make-vector len)])
+				(let ([env (extended-env-record vars vec old-env)])
+					(for-each 
+						(lambda (pos ids body)
+							(vector-set! vec pos (closure ids body env)))
+						(iota len 0) idss bodies) env)))))
+						
+(define iota
+	(lambda (num count)
+		(if (equal? (+ 1 count) num)
+			(list count)
+			(cons count (iota num (+ 1 count))))))
 
 (define apply-env
 	(lambda (env sym succeed fail) 

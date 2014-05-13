@@ -23,8 +23,9 @@
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
-		[letrec-exp (vars vals body)
-			(printf "Letrec-expression\n")]
+		[letrec-exp (vars idss vals body)
+			(eval-exp body
+				(extend-env-recursively vars idss vals env))]
 		[lambda-exp (id body)
 			(lambda-proc-with-env id body env)]
 		[if-else-exp (test-exp then-exp else-exp)
@@ -156,13 +157,8 @@
 							(syntax-expand 
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(list (car vals))))]
-			[letrec-exp (vars vals body)
-				(syntax-expand 
-					(let*-exp vars 
-						(map (lambda (x)
-								(place-let-into x vars vals))
-							vals)
-						body))]
+			[letrec-exp (vars idss vals body)
+				(letrec-exp vars idss (map syntax-expand vals) (syntax-expand body))]
 			[define-exp (name body)
 				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)
