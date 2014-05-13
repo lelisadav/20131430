@@ -41,6 +41,8 @@
 				(apply-proc proc-value args))]
 		[case-exp (var cases body)
 			(printf "I should never be here!")]
+		[set!-exp (id body)
+			(change-env id body env)]
 		[while-exp (test body)
 			(if (eval-exp test env)
 				(begin (loop-through body env)

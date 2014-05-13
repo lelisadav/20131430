@@ -17,7 +17,32 @@
 						(extended-env-record syms vals
 							(extended-env-record syms vals
 								(strike-from-e var envi)))))))))
-				
+(define change-env
+	(lambda (var cha env)
+		(cases environment env
+			(empty-env-record () env)
+			(extended-env-record (syms vals envi)
+				(let ([pos (list-find-position var syms)])
+					(if (number? pos)
+						(extended-env-record 
+							sym (change pos cha vals 0)
+							envi)
+						(extended-env-record syms vals
+							(extended-env-record syms vals
+								(change-env var cha envi)))))))))
+								
+(define change
+	(lambda (pos cha ls count)
+		(cond [(null? ls) '()]
+			[(equal? pos count)
+				(cons (get-place cha count 0) (change pos (strike (list count) cha 0) (cdr ls) (+ 1 count)))]
+			[else (cons (car ls) (change pos (cdr ls) (+ 1 count)))])))
+			
+(define get-place
+	(lambda (cha pos count)
+		(cond [(equal? pos count) (car cha)]
+			[else (get-place (cdr cha) pos (+ 1 count))])))
+
 (define strike
 	(lambda (pos ls count)
 		(cond [(null? ls) '()]
