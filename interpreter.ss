@@ -7,45 +7,71 @@
 
 ; eval-exp is the main component of the interpreter
 
+; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
-				(cadr datum)
+				(cadr datum) ;this is because we don't want it to deal with quote
 				datum)]
-		[var-exp (id)
+		[var-exp (id) ;this takes a variable exp, applies the environment to it and returns the result
 			(apply-env env id
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
 					(lambda () (display env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
-		[let-exp (vars exp bodies)
+		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
-		[letrec-exp (vars idss vals body)
+		[named-let-exp (name vars exp bodies) ;this is a stub
+			(printf "Something went wrong.")]
+		[letrec-exp (vars idss vals body) 
+		;this first extends the environment recursively, then evaluates the expressions of the body in that new env
 			(car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
 		[lambda-exp (id body)
+			;this converts a lambda-exp to a lambda-proc, which is necessary, because the environment of a lambda-proc 
+			;is not known until it evaluated and that is not done until here, as opposed to being in parse
 			(lambda-proc-with-env id body env)]
 		[if-else-exp (test-exp then-exp else-exp)
+			;this creates a 2-armed if by evaluating all 3 parts of the expr
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env)
 				(eval-exp else-exp env))]
 		[if-exp-null (test-exp then-exp)
+			;this is a 1-armed if
 			(if (eval-exp test-exp env)
 				(eval-exp then-exp env))]
 		[app-exp (rator rands) 
+			;this is an application of a procedure to a set of arguments
+			;first it returns the proc-value for the rator by evaling the rator
+			;the it evaluates the rands
+			;finally it applies the evaluated rator to the evaluated rands
 			(let* ([proc-value (eval-exp rator env)]
 					[args (eval-rands rands env)])
 				(apply-proc proc-value args))]
 		[case-exp (var cases body)
+			;this is a stub
 			(printf "I should never be here!")]
 		[set!-exp (id body)
+			;this first evaluates the body in the current env
+			;then it changes the value of id in env to be equal to the evaled body
+			;then it changes the global environment
+			;?????????Do we want to change the global environment or just the parent of the changed environment?
 			(set! global-env (change-env id (eval-exp body env) env))]
 		[while-exp (test body)
+			;this creates a while-exp by first checking to see if the test is true
+			;if so it iterates through the body and 
+			;evaluates each line of the body
 			(if (eval-exp test env)
 				(begin (loop-through body env)
 					(eval-exp exp env)))]
+		[unless-exp (condition body)
+			;this is a stub
+			(printf "Error! unless-exp")]
+		[when-exp (condition body)
+			;this is also a stub
+			(printf "Error when-exp")]
 				
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 		
@@ -58,6 +84,7 @@
 			[else (last (cdr ls))])))
 			
 (define loop-through
+	;this function loops through a list of expr and evaluates them in the specified env
 	(lambda (ls env)
 		(if (null? (cdr ls)) 
 			(eval-exp (car ls) env)
@@ -93,7 +120,8 @@
 					id
 					args env))])
 			(loop-through body envi))))
-						
+				
+;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
 (define with-lists 
 	(lambda (vars args env)
 		(cond [(symbol? vars) 
@@ -133,22 +161,44 @@
 
 (define eval-one-exp
 	(lambda (x) 
-		(top-level-eval (syntax-expand (parse-exp x)))))
+	;This is used to evaluate one expression. I know right?
+	;It first parses the expression
+	;Then it runs it through syntax-expand
+	;Then it evaluates it in the top level
+		(newline)
+		(newline)
+		(printf "\tEvaluating:\t")
+		(display x)
+		(newline)
+		(printf "\tThe correct answer is:\t")
+		(let ((res (eval x)))
+			(display res)
+			(newline)
+			(display "\tOur result: ")
+			(let ((ourres 
+			(top-level-eval (syntax-expand (parse-exp x)))
+			))
+			(display ourres)
+			(newline)
+			(if (equal? ourres res)
+				(display "\tCorrect!")
+				(display "\tIncorrect.")
+				)))))
 
 (define syntax-expand
 	(lambda (datum)
-		; (newline)
-		; (display datum)
-		; (newline)
 		(cases expression datum
-			[var-exp (id) (var-exp id)]
-			[lit-exp (id) (lit-exp id)]
+			[var-exp (id) (var-exp id)] ;no changes needed
+			[lit-exp (id) (lit-exp id)] ;no changed needed
 			[lambda-exp (id body) 
 				(lambda-exp id
-					(map syntax-expand body))]
-			[let-exp (vars vals body)
+					(map syntax-expand body))] ;just have to check for changes in the body
+			[let-exp (vars vals body) 
+				;converts the let-exp to an application of lambda, as shown by the syntax-definition of let
 				(app-exp (lambda-exp vars (map syntax-expand body)) (map syntax-expand vals))]
+					
 			[let*-exp (vars vals body)
+				;converts a let*-exp into an application of lambda as shown by the syntax-definition of let*
 				(if (null? vars)
 					(map syntax-expand body)
 					(app-exp 
@@ -157,12 +207,28 @@
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(list (car vals))))]
 			[letrec-exp (vars idss vals body)
+				;creates a letrec expression
+				; (display idss)
 				(letrec-exp vars idss (map syntax-expand vals) (map syntax-expand body))]
-			[named-let (name vars vals body)
-				(syntax-expand (letrec-exp name 
+			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
+					; name)
+			; expr ...)
+			[named-let-exp (name vars vals body)
+				;creates a named-let-exp
+				;!!!!!!!!!!!!!!!!!!!Work in Progress!
+				; (display vars)
+				; (newline)
+				; (display vals)
+				(app-exp 
+					(syntax-expand
+						(letrec-exp (list name) (list vars) 
+							(list (lambda-exp vars (map syntax-expand body)))
+							(list(var-exp name)))) (map syntax-expand vals))] 
 			[define-exp (name body)
+				;allows the use of define
 				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)
+				;creates nested if statements
 				(cond [(and (null? tests) (not (null? vals)))
 						(if-exp-null (parse-exp '(lambda () #t)) (syntax-expand (car vals)))]
 					[(and (null? (cdr tests)) (not (null? (cdr vals))))
@@ -174,20 +240,34 @@
 							(syntax-expand (cond-exp (cdr tests) (cdr vals))))])]
 			
 			[begin-exp (items)
+				;creates begin, which is basically putting your thingies into a thunk and using that thunk.
 				(app-exp (lambda-exp '() 
 					(map syntax-expand items)) '())]
 			[app-exp (rator rands)
+				;just have to check for changes to rator and rand
 				(app-exp (syntax-expand rator) (map syntax-expand rands))]
 			[set!-exp (id body)
+				;just have to check for changes to the body
 				(set!-exp id (syntax-expand body))]
 			[if-else-exp (test success fail)
+				;just have to check for changes to the success and fail expr
 				(if-else-exp test 
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
+				;just have to check for changes to the success expr
 				(if-exp-null test (syntax-expand success))]
 			[while-exp (test body)
+				;checks for changes to the test and the bodies
 				(while-exp (syntax-expand test) (map syntax-expand body))]
 			[or-exp (body) 
+				;converts the or-exp to the parsed form of this: [basically]
+					; (define or-def
+						; (lambda (x)
+							; (cond
+							; [(null? x) #f]
+							; [(= 1 (length x)) (car x)]
+							; [else
+							; (if (car x) (car x) (or-def (cdr x)))])))
 				(if (null? body)
 					(lit-exp '#f)
 					(app-exp (lambda-exp (list 'v)
@@ -195,6 +275,14 @@
 							(var-exp 'v)
 							(syntax-expand (or-exp (cdr body)))))) (list (car body))))]
 			[and-exp (body) 
+				;converts the and-exp to the parsed form of this: [basically]
+				; (define and-def
+					; (lambda (x) 
+						; (cond 
+							; [(null? x) #t]
+							; [(= 1(length x)) (car x)]
+							; [else
+								; (if (car x) (and-def (cdr x)) #f)])))
 				(if (null? body)
 					(lit-exp '#t)
 					(app-exp (lambda-exp (list 'v)
@@ -202,14 +290,28 @@
 							(syntax-expand (and-exp (cdr body)))
 							(var-exp 'v)))) (list (car body))))]
 			[case-exp (var cases next)
+				;converts to a conditional expression that does or
+				;????????????Right?
 				(syntax-expand (cond-exp (map (lambda (x) (change-to-or var x)) cases) (map syntax-expand next)))]
+			[unless-exp (condition body)
+				;this is basically the parsed form of this:
+					;(if (not condition)
+					;	(begin body))
+				(if-exp-null (app-exp (var-exp not) (syntax-expand condition)) (map syntax-expand body))]
+			[when-exp (condition body)
+				;this is basically the parsed form of this:
+					;(if condition
+					;	(begin body))
+				(if-exp-null (syntax-expand condition) (map syntax-expand body))]
+				
 									
 						
 						; Error here with it not correctly going onto the next list of statements. Needs better if-exp-null
 						; integration! Something like doing a cond exp of all the cond expressions? Or a multi-bodied lambda would probably work better
 						; as long as it short-circuited. It will get the correct answer if it's odd! But nothing for anything else... XD
 						)))
-						
+	
+;???????????????Can you explain the use of these two methods?	
 (define place-let-into
 	(lambda (val vars vals)
 		(app-exp (lambda-exp vars

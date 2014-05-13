@@ -137,7 +137,7 @@
 	[(null? x) #t]
 	[(= 1(length x)) (car x)]
 	[else
-	(if (car args) (and-def (cdr args)) #f)])))
+	(if (car x) (and-def (cdr x)) #f)])))
 (define or-def
 	(lambda (x)
 	(cond

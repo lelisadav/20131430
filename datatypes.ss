@@ -15,6 +15,11 @@
 		(vars (list-of symbol?))
 		(vals (list-of expression-o?))
 		(body (list-of expression?)))
+	(named-let-exp
+		(name symbol?)
+		(vars (list-of symbol?))
+		(vals (list-of expression-o?))
+		(body (list-of expression?)))
 	[let*-exp 
 		(vars (list-of symbol?))
 		(vals (list-of expression?))
@@ -55,6 +60,13 @@
 		(var expression?)
 		(cases (list-of (list-of expression?)))
 		(nexts (list-of expression-o?)))
+	(unless-exp
+		(condition expression?)
+		(body (list-of expression?)))
+	(when-exp
+		(condition expression?)
+		(body (list-of expression?)))
+	
 		
 		)
 
@@ -76,6 +88,9 @@
 ;Checks if something is an expression or proc-val.
 (define expression-o?
 	(lambda (v)
+		; (newline)
+		; (display v)
+		; (newline)
 		(or (expression? v) (proc-val? v))))
 (define element-of?
 			(lambda (x ls)
