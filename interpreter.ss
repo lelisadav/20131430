@@ -15,11 +15,11 @@
 				(cadr datum)
 				datum)]
 		[var-exp (id)
-			(apply-env global-env id
+			(apply-env env id
 				(lambda (x) x)
-				(lambda () (apply-env env id
+				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda () (display global-env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
+					(lambda () (display env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
@@ -150,16 +150,19 @@
 				(app-exp (lambda-exp vars (map syntax-expand body)) (map syntax-expand vals))]
 			[let*-exp (vars vals body)
 				(if (null? vars)
-					(syntax-expand body)
+					(map syntax-expand body)
 					(app-exp 
-						(lambda-exp (car vars) 
+						(lambda-exp (list (car vars)) 
 							(syntax-expand 
 								(let*-exp (cdr vars) (cdr vals) body))) 
-						(car vals)))]
+						(list (car vals))))]
 			[letrec-exp (vars vals body)
-				(if (null? vars)
-					(map syntax-expand body)
-					(syntax-expand (begin-exp (syntax-expand (letrec-exp (cdr vars) (cdr vals) (cons (set!-exp (car vars) (car vals)) body))))))]
+				(syntax-expand 
+					(let*-exp vars 
+						(map (lambda (x)
+								(place-let-into x vars vals))
+							vals)
+						body))]
 			[define-exp (name body)
 				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)
@@ -209,6 +212,13 @@
 						; integration! Something like doing a cond exp of all the cond expressions? Or a multi-bodied lambda would probably work better
 						; as long as it short-circuited. It will get the correct answer if it's odd! But nothing for anything else... XD
 						)))
+						
+(define place-let-into
+	(lambda (val vars vals)
+		(app-exp (lambda-exp vars
+			(list (syntax-expand val))) (map syntax-expand vals))))
+			
+		
 (define change-to-or
 	(lambda (var ls)
 		(syntax-expand 
