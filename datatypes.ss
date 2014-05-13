@@ -62,7 +62,7 @@
 	(empty-env-record)
 	(extended-env-record
 		(syms list?)
-		(vals (list-of scheme-value?))
+		(vals vector?)
 		(env environment?)))
 
 (define list-of? 

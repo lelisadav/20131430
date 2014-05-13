@@ -58,7 +58,8 @@
 			
 (define extend-env
 	(lambda (syms vals env)
-		(extended-env-record syms vals env)))
+		(extended-env-record syms (list->vector vals) env)))
+		
 (define empty-env
 	(lambda ()	
 		(empty-env-record)))
@@ -112,8 +113,8 @@
 				(let ([env (extended-env-record vars vec old-env)])
 					(for-each 
 						(lambda (pos ids body)
-							(vector-set! vec pos (closure ids body env)))
-						(iota len 0) idss bodies) env)))))
+							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
+						(iota len 0) idss vals) env)))))
 						
 (define iota
 	(lambda (num count)
@@ -129,6 +130,6 @@
 			(extended-env-record (syms vals env)
 				(let ((pos (list-find-position sym syms)))
 					(if (number? pos)
-						(succeed (list-ref vals pos))
+						(succeed (vector-ref vals pos))
 						(apply-env env sym succeed fail)))))))
 
