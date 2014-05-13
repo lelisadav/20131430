@@ -111,11 +111,21 @@
 		(let ([len (length vars)])
 			(let ([vec (make-vector len)])
 				(let ([env (extended-env-record vars vec old-env)])
-					(for-each 
+					
+					
+					;As best I can tell, the loop is occuring in here.
+					(
+					for-each 
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
-						(iota len 0) idss vals) env)))))
+						(iota len 0) idss vals)
+					env
+				)
+			)
+		)
+	)
+)
 						
 (define iota
 	(lambda (num count)

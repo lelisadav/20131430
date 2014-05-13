@@ -165,13 +165,25 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		; (newline)
-		; (newline)
-		; (printf "\t\t")
-		; (display x)
-		; (newline)
-		; (newline)
-		(top-level-eval (syntax-expand (parse-exp x)))))
+		(newline)
+		(newline)
+		(printf "\tEvaluating:\t")
+		(display x)
+		(newline)
+		(printf "\tThe correct answer is:\t")
+		(let ((res (eval x)))
+			(display res)
+			(newline)
+			(display "\tOur result: ")
+			(let ((ourres 
+			(top-level-eval (syntax-expand (parse-exp x)))
+			))
+			(display ourres)
+			(newline)
+			(if (equal? ourres res)
+				(display "\tCorrect!")
+				(display "\tIncorrect.")
+				)))))
 
 (define syntax-expand
 	(lambda (datum)
@@ -196,7 +208,7 @@
 						(list (car vals))))]
 			[letrec-exp (vars idss vals body)
 				;creates a letrec expression
-				(display idss)
+				; (display idss)
 				(letrec-exp vars idss (map syntax-expand vals) (map syntax-expand body))]
 			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
 					; name)
@@ -204,11 +216,11 @@
 			[named-let-exp (name vars vals body)
 				;creates a named-let-exp
 				;!!!!!!!!!!!!!!!!!!!Work in Progress!
-				(display vars)
-				(newline)
-				(display vals)
-				(syntax-expand 
-				(app-exp (letrec-exp (list name) (list vars) (list (lambda-exp vars (map syntax-expand body))) (list(var-exp name))) (map syntax-expand vals)))] 
+				; (display vars)
+				; (newline)
+				; (display vals)
+				
+				(app-exp (letrec-exp (list name) (list vars) (list (lambda-exp vars (map syntax-expand body))) (list(var-exp name))) (map syntax-expand vals))] 
 			[define-exp (name body)
 				;allows the use of define
 				(lambda-exp (list name) (list (syntax-expand body)))]
