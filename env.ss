@@ -25,7 +25,7 @@
 				(let ([pos (list-find-position var syms)])
 					(if (number? pos)
 						(extended-env-record 
-							sym (change pos cha vals 0)
+							syms (change pos cha vals 0)
 							envi)
 						(extended-env-record syms vals
 							(extended-env-record syms vals
@@ -35,8 +35,8 @@
 	(lambda (pos cha ls count)
 		(cond [(null? ls) '()]
 			[(equal? pos count)
-				(cons (get-place cha count 0) (change pos (strike (list count) cha 0) (cdr ls) (+ 1 count)))]
-			[else (cons (car ls) (change pos (cdr ls) (+ 1 count)))])))
+				(cons cha (cdr ls))]
+			[else (cons (car ls) (change pos cha (cdr ls) (+ 1 count)))])))
 			
 (define get-place
 	(lambda (cha pos count)
@@ -64,9 +64,10 @@
 		(empty-env-record)))
 (define top-level-eval
   (lambda (form)
-	
+	(let ([x (eval-exp form init-env)])
     ; later we may add things that are not expressions.
-    (eval-exp form init-env)))
+		(set! global-env init-env)
+		x)))
 			
 (define *prim-proc-names* 
 	'(+ - add1 sub1 cons = * quotient / zero? not and or < > <= >= list null? assq eq? equal? atom? 

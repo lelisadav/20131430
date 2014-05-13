@@ -36,7 +36,7 @@
 						(define-exp (cadr datum) (caddr datum))]
 					[(eqv? (car datum) 'set!)
 						(if (check-set? (cdr datum))
-							(set!-exp (parse-exp (cadr datum) ) (parse-exp (caddr datum) ))
+							(set!-exp (cadr datum) (parse-exp (caddr datum) ))
 							(eopl:error 'parse-exp 
 								"Error in parse-exp: set! expression: ~s" datum))]
 					[(eqv? (car datum) 'lambda) 

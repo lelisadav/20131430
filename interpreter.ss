@@ -15,12 +15,11 @@
 				(cadr datum)
 				datum)]
 		[var-exp (id)
-			(apply-env env id
+			(apply-env global-env id
 				(lambda (x) x)
-				(lambda () (apply-env global-env id
+				(lambda () (apply-env env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda (x) x)
-						(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
+					(lambda () (display global-env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
@@ -42,7 +41,7 @@
 		[case-exp (var cases body)
 			(printf "I should never be here!")]
 		[set!-exp (id body)
-			(change-env id body env)]
+			(set! global-env (change-env id (eval-exp body env) env))]
 		[while-exp (test body)
 			(if (eval-exp test env)
 				(begin (loop-through body env)
@@ -158,7 +157,9 @@
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(car vals)))]
 			[letrec-exp (vars vals body)
-				(letrec-exp vars vals body)]
+				(if (null? vars)
+					(map syntax-expand body)
+					(syntax-expand (begin-exp (syntax-expand (letrec-exp (cdr vars) (cdr vals) (cons (set!-exp (car vars) (car vals)) body))))))]
 			[define-exp (name body)
 				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)

@@ -6,7 +6,7 @@
 	(var-exp
 		(id symbol?))
 	(set!-exp
-		(change expression?)
+		(change symbol?)
 		(to expression?))
 	[lambda-exp
 		(id check-lam?)
