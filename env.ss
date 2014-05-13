@@ -64,7 +64,7 @@
 		(empty-env-record)))
 (define top-level-eval
   (lambda (form)
-	(let ([x (eval-exp form init-env)])
+	(let ([x (eval-exp form (empty-env))])
     ; later we may add things that are not expressions.
 		(set! global-env init-env)
 		x)))
