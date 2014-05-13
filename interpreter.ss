@@ -183,7 +183,8 @@
 			(if (equal? ourres res)
 				(display "\tCorrect!")
 				(display "\tIncorrect.")
-				)))))
+				)
+			ourres))))
 
 (define syntax-expand
 	(lambda (datum)
