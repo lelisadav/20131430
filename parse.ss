@@ -43,7 +43,7 @@
 						(if (check-valid-arg? (cadr datum))
 							(lambda-exp (cadr datum) (map parse-exp (cddr datum)))
 							(eopl:error 'parse-exp 
-								"Error in parse-exp: lambda expression: ~s" datum))]
+								"Error in parse-exp: lambda expression: ~s" datum))]	
 					[(eqv? (car datum) 'let)
 							(cond
 								[(= 1 (length(cdr datum))) (eopl:error 'parse-exp "~s-expression has incorrect length ~s" 'let datum)]
@@ -66,6 +66,27 @@
 										[vals (cadr splitls)]
 										)
 									(let-exp vars (map parse-exp vals) (map parse-exp body )))])]
+								[(symbol? (cadr datum)) ;named let
+									(cond
+									[(not (list? (caddr datum)))(eopl:error 'parse-exp
+										"declarations in ~s-expression not a list ~s" 'named-let datum)]
+									[(not (andmap list? (caddr datum))) (eopl:error 'parse-exp
+										"declarations in ~s-expression not a proper list ~s" 'named-let datum)]
+									[(not (andmap (lambda (x) (eq? 2 (length x))) (caddr datum)))
+										(eopl:error 'parse-exp
+											"declaration in ~s-exp must be a list of length 2 ~s" 'named-let datum)]
+									[(not (andmap (lambda (x) (symbol? (car x))) (caddr datum)))
+										(eopl:error 'parse-exp
+											"vars in ~s-exp must be symbols ~s" 'named-let datum)]
+									[else 
+										(let* ([name (cadr datum)]
+											[varvals (caddr datum)]
+											[body (cdddr datum)]
+											[splitls (split varvals)]
+											[vars (car splitls)]
+											[vals (cadr splitls)])
+										(named-let-exp name vars (map parse-exp vals) (map parse-exp body)))])]
+								
 								[else 
 									(eopl:error 'parse-exp
 									"declarations in ~s-expression not a list ~s" 'let datum)])]
@@ -126,6 +147,10 @@
 								"Error in parse-exp: if expression: ~s" datum))]
 					[(eqv? (car datum) 'while)
 						(while-exp (parse-exp (cadr datum)) (map parse-exp (cddr datum)))]
+					[(eqv? (car datum) 'unless)
+						(unless-exp (parse-exp (cadr datum)) (map parse-exp (cddr datum)))]
+					[(eqv? (car datum) 'when)
+						(when-exp (parse-exp (cadr datum)) (map parse-exp (cddr datum)))]
 					[(eqv? (car datum) 'or)
 						(or-exp (map parse-exp (cdr datum)))]
 					[(eqv? (car datum) 'and)

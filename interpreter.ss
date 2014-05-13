@@ -23,6 +23,8 @@
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies)
 			(printf "I shouldn't be here, ever!")]
+		[named-let-exp (name vars exp bodies)
+			(printf "Something went wrong.")]
 		[letrec-exp (vars idss vals body)
 			(car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
 		[lambda-exp (id body)
@@ -46,6 +48,10 @@
 			(if (eval-exp test env)
 				(begin (loop-through body env)
 					(eval-exp exp env)))]
+		[unless-exp (condition body)
+			(printf "Error! unless-exp")]
+		[when-exp (condition body)
+			(printf "Error when-exp")]
 				
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 		
@@ -133,6 +139,12 @@
 
 (define eval-one-exp
 	(lambda (x) 
+		(newline)
+		(newline)
+		(printf "\t\t")
+		(display x)
+		(newline)
+		(newline)
 		(top-level-eval (syntax-expand (parse-exp x)))))
 
 (define syntax-expand
@@ -157,9 +169,17 @@
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(list (car vals))))]
 			[letrec-exp (vars idss vals body)
+				(display idss)
 				(letrec-exp vars idss (map syntax-expand vals) (map syntax-expand body))]
-			[named-let (name vars vals body)
-				(syntax-expand (letrec-exp name 
+			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
+					; name)
+			; expr ...)
+			[named-let-exp (name vars vals body)
+				(display vars)
+				(newline)
+				(display vals)
+				(syntax-expand 
+				(app-exp (letrec-exp (list name) (list vars) (list (lambda-exp vars (map syntax-expand body))) (list(var-exp name))) (map syntax-expand vals)))] 
 			[define-exp (name body)
 				(lambda-exp (list name) (list (syntax-expand body)))]
 			[cond-exp (tests vals)
@@ -203,6 +223,11 @@
 							(var-exp 'v)))) (list (car body))))]
 			[case-exp (var cases next)
 				(syntax-expand (cond-exp (map (lambda (x) (change-to-or var x)) cases) (map syntax-expand next)))]
+			[unless-exp (condition body)
+				(if-exp-null (app-exp (var-exp not) (syntax-expand condition)) (map syntax-expand body))]
+			[when-exp (condition body)
+				(if-exp-null (syntax-expand condition) (map syntax-expand body))]
+				
 									
 						
 						; Error here with it not correctly going onto the next list of statements. Needs better if-exp-null

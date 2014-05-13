@@ -118,6 +118,7 @@
 						
 (define iota
 	(lambda (num count)
+		(display num)
 		(if (equal? (+ 1 count) num)
 			(list count)
 			(cons count (iota num (+ 1 count))))))
