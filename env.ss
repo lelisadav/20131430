@@ -27,7 +27,7 @@
 				(let ([pos (list-find-position var syms)])
 					(if (number? pos)
 						(extend-env (cons var (remove-at-pos pos syms 0)) 
-							(cons cha (remove-at-pos pos vals 0)) envi)
+							(cons cha (remove-at-pos pos (vector->list vals) 0)) envi)
 						(extended-env-record syms vals
 								(change-env var cha envi))))))))
 								
@@ -134,7 +134,7 @@
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
-						(iota len 0) idss vals) env)))))
+						(iotass len 0) idss vals) env)))))
 ; (define for-each-redef
   ; (lambda (f ls . more)
     ; (do ([ls ls (cdr ls)] [more more (map cdr more)])
@@ -146,11 +146,11 @@
 ;		'()
 ;		(cons m (make-range (+ m 1) n)))))
 				
-(define iota
+(define iotass
 	(lambda (pos count)
 		(if (equal? (+ 1 count) pos)
 			(list count)
-			(cons count (iota pos (+ 1 count))))))
+			(cons count (iotass pos (+ 1 count))))))
 
 (define apply-env
 	(lambda (env sym succeed fail) 
