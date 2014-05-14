@@ -61,23 +61,11 @@
 		
 	    (eval-one-exp '(letrec ([product
 		       (lambda (x y)
-			   
+			   (display "k")
 			   
 			 (if (null? y)
 			     '()
 			     (let loop ([x x] [accum '()])
-					(newline)
-					(newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
 			       (if (null? x)
 				   accum
 				   (loop (cdr x)

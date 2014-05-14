@@ -95,7 +95,7 @@
 (define *prim-proc-names* 
 	'(+ - add1 sub1 cons = * quotient / zero? not and or < > <= >= list null? assq eq? equal? atom? 
 	length list->vector list? pair? procedure? vector->list vector make-vector vector-ref 
-	vector? number? symbol? set-car! set-cdr! vector-set! display
+	vector? number? symbol? set-car! set-cdr! vector-set! display newline
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
 	cddadr cddar cdddar cddddr cdddr cddr cdr map apply append list-tail eqv?))
