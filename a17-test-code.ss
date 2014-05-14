@@ -58,11 +58,8 @@
 					[(eqv? (car ls) sym) #t]
 					[else (member? sym (cdr ls))]))])
 		(union '(a c e d k) '(e b a d c))))
-		
-	    (eval-one-exp '(letrec ([product
+	     (letrec ([product
 		       (lambda (x y)
-			   (display "k")
-			   
 			 (if (null? y)
 			     '()
 			     (let loop ([x x] [accum '()])
@@ -73,7 +70,7 @@
 							(list (car x) s))
 						      y)
 						 accum))))))])
-	       (product '(1 2 3) '(a b))))
+	       (product '(1 2 3) '(a b)))
 	     )])
       (display-results correct answers sequal?-grading)))
 
@@ -230,3 +227,4 @@
 )
 
 (define r run-all)
+
