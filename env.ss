@@ -108,21 +108,36 @@
 		 
 (define extend-env-recursively 
 	(lambda (vars idss vals old-env)
+		(display (null? vars))
 		(let ([len (length vars)])
+			(display len)
 			(let ([vec (make-vector len)])
+				(display (null? vars))
+				(display len)
 				(let ([env (extended-env-record vars vec old-env)])
+				(display (null? vars))
+				(display len)
 					(for-each 
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
-						(begin 
-						(display len)
-						(iota len 0)) idss vals) env)))))
 						
+						(iota vars 0) idss vals) env)))))
+				
 (define iota
+	(lambda (ls i)
+		(display (length ls))
+		(iota2 (length ls) i)))
+(define iota2
 	(lambda (num count)
+		 (display count)
+		(newline)
 		(if (equal? (+ 1 count) num)
 			(list count)
-			(cons count (iota num (+ 1 count))))))
+			
+			(cons count (iota2 num (+ 1 count)))
+			
+			
+			)))
 
 (define apply-env
 	(lambda (env sym succeed fail) 
