@@ -88,10 +88,8 @@
 ;Checks if something is an expression or proc-val.
 (define expression-o?
 	(lambda (v)
-		; (newline)
-		; (display v)
-		; (newline)
 		(or (expression? v) (proc-val? v))))
+		
 (define element-of?
 			(lambda (x ls)
 				(cond
