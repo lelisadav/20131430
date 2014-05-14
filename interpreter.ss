@@ -21,8 +21,8 @@
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda () (display env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
-							"variable not found in environment: ~s" id) (newline) (display env))))))]
+					(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" id))))))]
 		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
 		[named-let-exp (name vars exp bodies) ;this is a stub
@@ -118,11 +118,9 @@
 		(let ([envi 
 			(if (or (symbol? id) (not (list? id)))
 				(with-lists id args env)
-				(if (check-in-env? id env)
-					(go-through-and-change id args env)
-					(extend-env 
-						id
-						args env)))])
+				(extend-env 
+					id
+					args env))])
 			(loop-through body envi))))
 				
 ;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
@@ -169,28 +167,7 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		(newline)
-		(newline)
-		(printf "\tEvaluating:\t")
-		(display x)
-		(newline)
-		(printf "\tThe correct answer is:\t")
-		 (top-level-eval (syntax-expand (parse-exp x)))
-		; (let ((res (eval x)))
-			; (display res)
-			; (newline)
-			; (display "\tOur result: ")
-			; (let ((ourres 
-			; (top-level-eval (syntax-expand (parse-exp x)))
-			; ))
-			; (display ourres)
-			; (newline)
-			; (if (equal? ourres res)
-				; (display "\tCorrect!")
-				; (display "\tIncorrect.")
-				; )
-			; ourres)))
-			
+		 (top-level-eval (syntax-expand (parse-exp x)))			
 			))
 
 (define syntax-expand

@@ -36,10 +36,16 @@
 		(cases environment env
 			(empty-env-record () #f)
 			(extended-env-record (syms vals envi)
-				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
-					(if (andmap number? pos)
+				(let ([is (map (lambda (x) (check-in? x syms)) id)])
+					(if (ormap (lambda (x) x) is)
 						#t
 						(check-in-env? id envi)))))))
+						
+(define check-in?
+	(lambda (var ls)
+		(cond [(null? ls) #f]
+			[(equal? (car ls) var) #t]
+			[else (check-in? var (cdr ls))])))
 						
 (define go-through-and-change
 	(lambda (ids args env)
@@ -135,16 +141,6 @@
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
 						(iotass len 0) idss vals) env)))))
-; (define for-each-redef
-  ; (lambda (f ls . more)
-    ; (do ([ls ls (cdr ls)] [more more (map cdr more)])
-        ; ((null? ls))
-      ; (apply f (car ls) (map car more))))) 
-;(define make-range
-;	(lambda (m n)
-;		(if (>= m n) 
-;		'()
-;		(cons m (make-range (+ m 1) n)))))
 				
 (define iotass
 	(lambda (pos count)
