@@ -1,5 +1,6 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
+;?????????Can you explain the difference between strike-from-env and strike-from-e?
 (define strike-from-env
 	(lambda (var env)
 		(strike-from-e var env)))
@@ -17,6 +18,7 @@
 						(extended-env-record syms vals
 							(extended-env-record syms vals
 								(strike-from-e var envi)))))))))
+;This function changes a variable in an environment
 (define change-env
 	(lambda (var cha env)
 		(cases environment env
