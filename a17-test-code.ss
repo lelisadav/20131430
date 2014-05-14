@@ -1,4 +1,4 @@
-;; Test code for CSSE 304 Assignment 7
+;; Test code for CSSE 304 Assignment 17
 
 (define (test-basics)
     (let ([correct '(
@@ -27,7 +27,7 @@
 		  (if (= n 0)
 		      acc
 		      (f (sub1 n) (* acc n))))))
-	    
+	     
 	     (eval-one-exp '
 	      (letrec ([even? (lambda (n)
 				(if (zero? n) 
@@ -58,7 +58,8 @@
 					[(eqv? (car ls) sym) #t]
 					[else (member? sym (cdr ls))]))])
 		(union '(a c e d k) '(e b a d c))))
-	     (letrec ([product
+		
+	    (eval-one-exp '(letrec ([product
 		       (lambda (x y)
 			 (if (null? y)
 			     '()
@@ -70,7 +71,7 @@
 							(list (car x) s))
 						      y)
 						 accum))))))])
-	       (product '(1 2 3) '(a b)))
+	       (product '(1 2 3) '(a b))))
 	     )])
       (display-results correct answers sequal?-grading)))
 
@@ -227,4 +228,3 @@
 )
 
 (define r run-all)
-

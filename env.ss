@@ -114,7 +114,9 @@
 					(for-each 
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
-						(iota len 0) idss vals) env)))))
+						(begin 
+						(display len)
+						(iota len 0)) idss vals) env)))))
 						
 (define iota
 	(lambda (num count)
