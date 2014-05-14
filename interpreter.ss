@@ -7,6 +7,7 @@
 
 ; eval-exp is the main component of the interpreter
 
+(print-graph #t)
 ; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
@@ -28,6 +29,8 @@
 			(printf "Something went wrong.")]
 		[letrec-exp (vars idss vals body) 
 		;this first extends the environment recursively, then evaluates the expressions of the body in that new env
+		;let ext-env be ext-recursv then do all the bodies
+		;this currently makes a new recursv env for each body
 			(car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
 		[lambda-exp (id body)
 			;this converts a lambda-exp to a lambda-proc, which is necessary, because the environment of a lambda-proc 
@@ -109,9 +112,9 @@
 ;Evaluates the lambda.
 (define apply-lambda
 	(lambda (id body args env)
-		(display (check-in-env? id env)) (newline)
-		(display id) (newline)
-		(display env) (newline)
+		; (display (check-in-env? id env)) (newline)
+		; (display id) (newline)
+		; (display env) (newline)
 		(let ([envi 
 			(if (or (symbol? id) (not (list? id)))
 				(with-lists id args env)
@@ -172,20 +175,23 @@
 		(display x)
 		(newline)
 		(printf "\tThe correct answer is:\t")
-		(let ((res (eval x)))
-			(display res)
-			(newline)
-			(display "\tOur result: ")
-			(let ((ourres 
-			(top-level-eval (syntax-expand (parse-exp x)))
+		 (top-level-eval (syntax-expand (parse-exp x)))
+		; (let ((res (eval x)))
+			; (display res)
+			; (newline)
+			; (display "\tOur result: ")
+			; (let ((ourres 
+			; (top-level-eval (syntax-expand (parse-exp x)))
+			; ))
+			; (display ourres)
+			; (newline)
+			; (if (equal? ourres res)
+				; (display "\tCorrect!")
+				; (display "\tIncorrect.")
+				; )
+			; ourres)))
+			
 			))
-			(display ourres)
-			(newline)
-			(if (equal? ourres res)
-				(display "\tCorrect!")
-				(display "\tIncorrect.")
-				)
-			ourres))))
 
 (define syntax-expand
 	(lambda (datum)
