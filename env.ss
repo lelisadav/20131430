@@ -117,27 +117,37 @@
 				(let ([env (extended-env-record vars vec old-env)])
 				(display (null? vars))
 				(display len)
-					(for-each 
+					(for-each
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
-						(iota vars 0) idss vals) env)))))
+						(make-range 0 (length vars)) idss vals) env)))))
+; (define for-each-redef
+  ; (lambda (f ls . more)
+    ; (do ([ls ls (cdr ls)] [more more (map cdr more)])
+        ; ((null? ls))
+      ; (apply f (car ls) (map car more))))) 
+(define make-range
+	(lambda (m n)
+		(if (>= m n) 
+		'()
+		(cons m (make-range (+ m 1) n)))))
 				
-(define iota
-	(lambda (ls i)
-		(display (length ls))
-		(iota2 (length ls) i)))
-(define iota2
-	(lambda (num count)
-		 (display count)
-		(newline)
-		(if (equal? (+ 1 count) num)
-			(list count)
+; (define iota
+	; (lambda (ls i)
+		; (display (length ls))
+		; (iota2 (length ls) i)))
+; (define iota2
+	; (lambda (num count)
+		 ; (display count)
+		; (newline)
+		; (if (equal? (+ 1 count) num)
+			; (list count)
 			
-			(cons count (iota2 num (+ 1 count)))
+			; (cons count (iota2 num (+ 1 count)))
 			
 			
-			)))
+			; )))
 
 (define apply-env
 	(lambda (env sym succeed fail) 
