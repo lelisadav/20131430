@@ -26,19 +26,33 @@
 			(extended-env-record (syms vals envi)
 				(let ([pos (list-find-position var syms)])
 					(if (number? pos)
-						(extended-env-record 
-							syms (change pos cha vals 0)
-							envi)
+						(extend-env (cons var (remove-at-pos pos syms 0)) 
+							(cons cha (remove-at-pos pos vals 0)) envi)
 						(extended-env-record syms vals
-							(extended-env-record syms vals
-								(change-env var cha envi)))))))))
+								(change-env var cha envi))))))))
 								
-(define change
-	(lambda (pos cha ls count)
-		(cond [(null? ls) '()]
-			[(equal? pos count)
-				(cons cha (cdr ls))]
-			[else (cons (car ls) (change pos cha (cdr ls) (+ 1 count)))])))
+(define check-in-env?
+	(lambda (id env)
+		(cases environment env
+			(empty-env-record () #f)
+			(extended-env-record (syms vals envi)
+				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
+					(if (andmap number? pos)
+						#t
+						(check-in-env? id envi)))))))
+						
+(define go-through-and-change
+	(lambda (ids args env)
+		(if (null? (cdr ids))
+			env
+			(go-through-and-change (cdr ids) (cdr args) 
+				(change-env (car ids) (car args) env)))))
+								
+(define remove-at-pos
+	(lambda (pos ls count)
+		(if (equal? pos count)
+			(cdr ls)
+			(cons (car ls) (remove-at-pos pos (cdr ls) (+ 1 count))))))
 			
 (define get-place
 	(lambda (cha pos count)
@@ -113,46 +127,30 @@
 		 
 (define extend-env-recursively 
 	(lambda (vars idss vals old-env)
-		(display (null? vars))
 		(let ([len (length vars)])
-			(display len)
 			(let ([vec (make-vector len)])
-				(display (null? vars))
-				(display len)
 				(let ([env (extended-env-record vars vec old-env)])
-				(display (null? vars))
-				(display len)
 					(for-each
 						(lambda (pos ids body)
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
-						(make-range 0 (length vars)) idss vals) env)))))
+						(iota len 0) idss vals) env)))))
 ; (define for-each-redef
   ; (lambda (f ls . more)
     ; (do ([ls ls (cdr ls)] [more more (map cdr more)])
         ; ((null? ls))
       ; (apply f (car ls) (map car more))))) 
-(define make-range
-	(lambda (m n)
-		(if (>= m n) 
-		'()
-		(cons m (make-range (+ m 1) n)))))
+;(define make-range
+;	(lambda (m n)
+;		(if (>= m n) 
+;		'()
+;		(cons m (make-range (+ m 1) n)))))
 				
-; (define iota
-	; (lambda (ls i)
-		; (display (length ls))
-		; (iota2 (length ls) i)))
-; (define iota2
-	; (lambda (num count)
-		 ; (display count)
-		; (newline)
-		; (if (equal? (+ 1 count) num)
-			; (list count)
-			
-			; (cons count (iota2 num (+ 1 count)))
-			
-			
-			; )))
+(define iota
+	(lambda (pos count)
+		(if (equal? (+ 1 count) pos)
+			(list count)
+			(cons count (iota pos (+ 1 count))))))
 
 (define apply-env
 	(lambda (env sym succeed fail) 

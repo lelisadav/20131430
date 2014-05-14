@@ -54,11 +54,7 @@
 			;this is a stub
 			(printf "I should never be here!")]
 		[set!-exp (id body)
-			;this first evaluates the body in the current env
-			;then it changes the value of id in env to be equal to the evaled body
-			;then it changes the global environment
-			;?????????Do we want to change the global environment or just the parent of the changed environment?
-			(set! global-env (change-env id (eval-exp body env) env))]
+			(printf "Nothing here.")]
 		[while-exp (test body)
 			;this creates a while-exp by first checking to see if the test is true
 			;if so it iterates through the body and 
@@ -67,7 +63,7 @@
 				(begin (loop-through body env)
 					(eval-exp exp env)))]
 		[unless-exp (condition body)
-			;this is a stub
+			;Don't work on these while we still have a lot of work to do!! 
 			(printf "Error! unless-exp")]
 		[when-exp (condition body)
 			;this is also a stub
@@ -113,12 +109,17 @@
 ;Evaluates the lambda.
 (define apply-lambda
 	(lambda (id body args env)
+		(display (check-in-env? id env)) (newline)
+		(display id) (newline)
+		(display env) (newline)
 		(let ([envi 
 			(if (or (symbol? id) (not (list? id)))
 				(with-lists id args env)
-				(extend-env 
-					id
-					args env))])
+				(if (check-in-env? id env)
+					(go-through-and-change id args env)
+					(extend-env 
+						id
+						args env)))])
 			(loop-through body envi))))
 				
 ;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
