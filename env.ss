@@ -19,40 +19,34 @@
 							(extended-env-record syms vals
 								(strike-from-e var envi)))))))))
 ;This function changes a variable in an environment
-(define change-env
-	(lambda (var cha env)
-		(cases environment env
-			(empty-env-record () env)
-			(extended-env-record (syms vals envi)
-				(let ([pos (list-find-position var syms)])
-					(if (number? pos)
-						(extend-env (cons var (remove-at-pos pos syms 0)) 
-							(cons cha (remove-at-pos pos (vector->list vals) 0)) envi)
-						(extended-env-record syms vals
-								(change-env var cha envi))))))))
+; (define change-env
+	; (lambda (var cha env)
+		; (cases environment env
+			; (empty-env-record () env)
+			; (extended-env-record (syms vals envi)
+				; (let ([pos (list-find-position var syms)])
+					; (if (number? pos) (begin
+						; (vector-set! vals pos cha)
+						; env)
+						; (extended-env-record syms vals
+								; (change-env var cha envi))))))))
 								
 (define check-in-env?
 	(lambda (id env)
 		(cases environment env
 			(empty-env-record () #f)
 			(extended-env-record (syms vals envi)
-				(let ([is (map (lambda (x) (check-in? x syms)) id)])
-					(if (ormap (lambda (x) x) is)
+				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
+					(if (andmap number? pos)
 						#t
 						(check-in-env? id envi)))))))
 						
-(define check-in?
-	(lambda (var ls)
-		(cond [(null? ls) #f]
-			[(equal? (car ls) var) #t]
-			[else (check-in? var (cdr ls))])))
-						
-(define go-through-and-change
-	(lambda (ids args env)
-		(if (null? (cdr ids))
-			env
-			(go-through-and-change (cdr ids) (cdr args) 
-				(change-env (car ids) (car args) env)))))
+; (define go-through-and-change
+	; (lambda (ids args env)
+		; (if (null? (cdr ids))
+			; env
+			; (go-through-and-change (cdr ids) (cdr args) 
+				; (change-env (car ids) (car args) env)))))
 								
 (define remove-at-pos
 	(lambda (pos ls count)
@@ -80,7 +74,7 @@
 			
 (define extend-env
 	(lambda (syms vals env)
-		(extended-env-record syms (list->vector vals) env)))
+		(extended-env-record syms vals env)))
 		
 (define empty-env
 	(lambda ()	
@@ -98,7 +92,7 @@
 	vector? number? symbol? set-car! set-cdr! vector-set! display
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
-	cddadr cddar cdddar cddddr cdddr cddr cdr map apply))
+	cddadr cddar cdddar cddddr cdddr cddr cdr map apply append list-tail eqv?))
 
 (define init-env         ; for now, our initial global environment only contains 
 	(extend-env            ; procedure names.  Recall that an environment associates
@@ -141,6 +135,16 @@
 							(vector-set! vec pos (lambda-proc-with-env ids (list body) env)))
 						
 						(iotass len 0) idss vals) env)))))
+; (define for-each-redef
+  ; (lambda (f ls . more)
+    ; (do ([ls ls (cdr ls)] [more more (map cdr more)])
+        ; ((null? ls))
+      ; (apply f (car ls) (map car more))))) 
+;(define make-range
+;	(lambda (m n)
+;		(if (>= m n) 
+;		'()
+;		(cons m (make-range (+ m 1) n)))))
 				
 (define iotass
 	(lambda (pos count)
@@ -156,6 +160,6 @@
 			(extended-env-record (syms vals env)
 				(let ((pos (list-find-position sym syms)))
 					(if (number? pos)
-						(succeed (vector-ref vals pos))
+						(succeed (list-ref vals pos))
 						(apply-env env sym succeed fail)))))))
 

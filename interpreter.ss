@@ -8,6 +8,11 @@
 ; eval-exp is the main component of the interpreter
 
 (print-graph #t)
+(define list-fill
+	(lambda (num obj)
+		(if (zero? num)
+			'()
+			(cons obj (list-fill (- num 1) obj)))))
 ; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
@@ -21,17 +26,29 @@
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
-							"variable not found in environment: ~s" id))))))]
+					(lambda () (display env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
 		[named-let-exp (name vars exp bodies) ;this is a stub
 			(printf "Something went wrong.")]
-		[letrec-exp (vars idss vals body) 
+		[letrec-exp (vars vals bodies) 
 		;this first extends the environment recursively, then evaluates the expressions of the body in that new env
 		;let ext-env be ext-recursv then do all the bodies
 		;this currently makes a new recursv env for each body
-			(car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
+			(let* ([ls (list-fill(length vars) '#(42))]
+				[new-env (extend-env vars ls env)]
+				[evals (map (lambda (x) (eval-exp x new-env)) vals)])
+				(set-car! ls (car evals))
+				(set-cdr! ls (cdr evals))
+					(let loop ((bodies bodies))
+						(if (null? (cdr bodies))
+							(eval-exp (car bodies) new-env)
+							(begin 
+								(eval-exp (car bodies) new-env)
+								(loop (cdr bodies))))))]
+			
+			; (car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
 		[lambda-exp (id body)
 			;this converts a lambda-exp to a lambda-proc, which is necessary, because the environment of a lambda-proc 
 			;is not known until it evaluated and that is not done until here, as opposed to being in parse
@@ -75,7 +92,13 @@
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 		
 
-					
+(define replace-vector
+	(lambda (vec1 vec2 val)
+		(if (>= val 0)
+			(begin
+		(vector-set! vec2 val(vector-ref vec1 val))
+			(replace-vector vec1 vec2 (- val 1))))))
+		
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
@@ -115,12 +138,9 @@
 		; (display (check-in-env? id env)) (newline)
 		; (display id) (newline)
 		; (display env) (newline)
-		(let ([envi 
-			(if (or (symbol? id) (not (list? id)))
-				(with-lists id args env)
-				(extend-env 
-					id
-					args env))])
+		(let ([envi (extend-env 
+						id
+						args env)])
 			(loop-through body envi))))
 				
 ;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
@@ -167,8 +187,30 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		 (top-level-eval (syntax-expand (parse-exp x)))			
-			))
+		; (newline)
+		; (newline)
+		; (printf "\tEvaluating:\t")
+		; (display x)
+		; (newline)
+		; (printf "\tThe correct answer is:\t")
+		 (top-level-eval (syntax-expand (parse-exp x)))
+		; (let ((res (eval x)))
+			; (display res)
+			; (newline)
+			; (display "\tOur result: ")
+			; (let ((ourres 
+			; (top-level-eval (syntax-expand (parse-exp x)))
+			; ))
+			; (display ourres)
+			; (newline)
+			; (if (equal? ourres res)
+				; (display "\tCorrect!")
+				; (display "\tIncorrect.")
+				; )
+			; ourres))
+			)
+			
+			)
 
 (define syntax-expand
 	(lambda (datum)
@@ -191,10 +233,10 @@
 							(syntax-expand 
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(list (car vals))))]
-			[letrec-exp (vars idss vals body)
+			[letrec-exp (vars vals body)
 				;creates a letrec expression
 				; (display idss)
-				(letrec-exp vars idss (map syntax-expand vals) (map syntax-expand body))]
+				(letrec-exp vars (map syntax-expand vals) (map syntax-expand body))]
 			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
 					; name)
 			; expr ...)
