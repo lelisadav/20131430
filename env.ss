@@ -88,6 +88,9 @@
 (define global-env 
 	init-env)
 
+(define new-env
+	(lambda (env)
+		env))
 ; (define extend-env
 	; (lambda (syms vals env)
 		; (extended-env-record syms vals env)))
